@@ -13,8 +13,8 @@ class DuitkuCore_Web {
         $result = Duitku_ApiRequestor::post($baseUrl . '/api/merchant/v2/inquiry',$params);
     }
 
-    //var_dump($result);
-    //die();
+    // var_dump($result);
+    // die();
     return $result->paymentUrl;
   }
   
