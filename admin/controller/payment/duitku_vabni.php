@@ -34,7 +34,6 @@ class ControllerPaymentDuitkuVabni extends Controller {
       'text_edit',
       'entry_merchant',
       'entry_api_key',          
-      'entry_expired_period',          
       'entry_test',
       'entry_total',
       'entry_order_status',
@@ -88,7 +87,6 @@ class ControllerPaymentDuitkuVabni extends Controller {
       'duitku_vabni_merchant',
       'duitku_vabni_environment',
       'duitku_vabni_api_key',
-      'duitku_vabni_expired',
       'duitku_vabni_endpoint',      
       'duitku_vabni_debug',
       'duitku_vabni_total',
@@ -157,11 +155,7 @@ class ControllerPaymentDuitkuVabni extends Controller {
 
     if (!$this->request->post['duitku_vabni_merchant']) {
       $this->error['server_key_v2'] = $this->language->get('error_server_key');
-    }
-
-	if (!$this->request->post['duitku_vabni_expired'] OR $this->request->post['duitku_vabni_expired'] > 1440 ) {
-		$this->error['expired_period'] = $this->language->get('error_expired_period');
-	}        
+    }        
 
     if (!$this->request->post['duitku_vabni_endpoint']) {
       $this->error['endpoint'] = $this->language->get('error_endpoint');

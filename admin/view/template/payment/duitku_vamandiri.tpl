@@ -20,7 +20,6 @@
     <!-- heading -->
 
 	<div class="content">								
-    <h4 class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>This Payment Method will be removed in future release</h4>
 		<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form" class="form-horizontal">
  		<table class="form">
           <tr>
@@ -77,16 +76,6 @@
             </td>
           </tr>
           <!-- API Key -->
-		  
-			  <tr>
-				<td><span class="required">*</span> <?php echo $entry_expired_period; ?></td>
-				<td><input type="number" name="duitku_vamandiri_expired" value="<?php echo $duitku_vamandiri_expired; ?>" />
-				  <?php if (isset($error['expired_period'])): ?>
-				  <span class="error"><?php echo $error['expired_period']; ?></span>
-				  <?php endif; ?>
-				</td>
-			  </tr>
-			<!-- expired_period Key -->
 
            <?php foreach (array('duitku_vamandiri_success_mapping', 'duitku_vamandiri_failure_mapping') as $status): ?>
             <tr class="">
@@ -128,7 +117,7 @@
         </table>
       </form>
       <div>
-              <center><font size="1">version 2.3 - This Payment Method will be removed in future release</font></center>
+              <center><font size="1">version 1.0</font></center>
             </div>
     </div>
     <!-- content -->

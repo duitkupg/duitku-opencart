@@ -34,7 +34,6 @@ class ControllerPaymentDuitkuVaritel extends Controller {
       'text_edit',
       'entry_merchant',
       'entry_api_key',          
-      'entry_expired_period',          
       'entry_test',
       'entry_total',
       'entry_order_status',
@@ -88,7 +87,6 @@ class ControllerPaymentDuitkuVaritel extends Controller {
       'duitku_varitel_merchant',
       'duitku_varitel_environment',
       'duitku_varitel_api_key',
-      'duitku_varitel_expired',
       'duitku_varitel_endpoint',      
       'duitku_varitel_debug',
       'duitku_varitel_total',
@@ -157,11 +155,7 @@ class ControllerPaymentDuitkuVaritel extends Controller {
 
     if (!$this->request->post['duitku_varitel_merchant']) {
       $this->error['server_key_v2'] = $this->language->get('error_server_key');
-    }
-
-	if (!$this->request->post['duitku_varitel_expired'] OR $this->request->post['duitku_varitel_expired'] > 1440 ) {
-		$this->error['expired_period'] = $this->language->get('error_expired_period');
-	}        
+    }        
 
     if (!$this->request->post['duitku_varitel_endpoint']) {
       $this->error['endpoint'] = $this->language->get('error_endpoint');

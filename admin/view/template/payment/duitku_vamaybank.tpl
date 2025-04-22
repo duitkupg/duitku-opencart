@@ -76,16 +76,6 @@
             </td>
           </tr>
           <!-- API Key -->
-		  
-			  <tr>
-				<td><span class="required">*</span> <?php echo $entry_expired_period; ?></td>
-				<td><input type="number" name="duitku_vamaybank_expired" value="<?php echo $duitku_vamaybank_expired; ?>" />
-				  <?php if (isset($error['expired_period'])): ?>
-				  <span class="error"><?php echo $error['expired_period']; ?></span>
-				  <?php endif; ?>
-				</td>
-			  </tr>
-			<!-- expired_period Key -->
 
            <?php foreach (array('duitku_vamaybank_success_mapping', 'duitku_vamaybank_failure_mapping') as $status): ?>
             <tr class="">
@@ -127,7 +117,7 @@
         </table>
       </form>
       <div>
-              <center><font size="1">version 2.2</font></center>
+              <center><font size="1">version 1.0</font></center>
             </div>
     </div>
     <!-- content -->
