@@ -33,3 +33,7 @@
 -----
 - Update channel Mandiri Virtual Account become Deprecated
 - add channels to VA Mandiri Direct
+
+2.9
+-----
+- add channels to PosPay
