@@ -60,3 +60,7 @@
 2.11.2
 ----
 - Add channel Atome
+
+2.11.3
+----
+- Add channel Gudang Voucher QRIS 
