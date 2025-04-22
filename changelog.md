@@ -27,3 +27,7 @@
 2.1
 -----
 - Improve parameter Duitku Expiry Period
+
+2.2
+-----
+- add channels to BCA Virtual Account

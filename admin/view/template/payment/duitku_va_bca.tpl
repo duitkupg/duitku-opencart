@@ -40,10 +40,10 @@
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_status; ?></label>
 							<div class="col-sm-3">
-							  <select name="duitku_va_mandiri_status" id="input-mode" class="form-control">
+							  <select name="duitku_va_bca_status" id="input-mode" class="form-control">
 								<?php $options = array('1' => $text_enabled, '0' => $text_disabled) ?>
 								<?php foreach ($options as $key => $value): ?>
-								  <option value="<?php echo $key ?>" <?php if ($key == $duitku_va_mandiri_status) echo 'selected' ?> ><?php echo $value ?></option>
+								  <option value="<?php echo $key ?>" <?php if ($key == $duitku_va_bca_status) echo 'selected' ?> ><?php echo $value ?></option>
 								<?php endforeach ?>
 							  </select>
 							</div>
@@ -54,7 +54,7 @@
 						<div class="form-group required">
 							<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_display_name; ?></label>
 							<div class="col-sm-3">
-							  <input type="text" name="duitku_va_mandiri_display_name" value="<?php echo $duitku_va_mandiri_display_name; ?>" id="input-merchant-id" class="form-control" />
+							  <input type="text" name="duitku_va_bca_display_name" value="<?php echo $duitku_va_bca_display_name; ?>" id="input-merchant-id" class="form-control" />
 							</div>
 							<div class="col-sm-7">
 								<?php if (isset($error['display_name'])) { ?>
@@ -68,7 +68,7 @@
 						<div class="form-group required">
 							<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_endpoint; ?></label>
 							<div class="col-sm-3">
-							  <input type="text" name="duitku_va_mandiri_endpoint" value="<?php echo $duitku_va_mandiri_endpoint; ?>" id="input-merchant-id" class="form-control" />
+							  <input type="text" name="duitku_va_bca_endpoint" value="<?php echo $duitku_va_bca_endpoint; ?>" id="input-merchant-id" class="form-control" />
 							</div>
 							<div class="col-sm-7">
 								<?php if (isset($error['endpoint'])) { ?>
@@ -83,10 +83,10 @@
 						<div class="form-group v2_settings sensitive required">
 							<label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_environment; ?></label>
 							<div class="col-sm-3">
-								<select name="duitku_va_mandiri_environment" id="input-mode" class="form-control">
+								<select name="duitku_va_bca_environment" id="input-mode" class="form-control">
 									<?php $options = array('development' => 'Sandbox', 'production' => 'Production') ?>
 									<?php foreach ($options as $key => $value): ?>
-									<option value="<?php echo $key ?>" <?php if ($key == $duitku_va_mandiri_environment) echo 'selected' ?> ><?php echo $value ?></option>
+									<option value="<?php echo $key ?>" <?php if ($key == $duitku_va_bca_environment) echo 'selected' ?> ><?php echo $value ?></option>
 									<?php endforeach ?>
 								</select>
 							</div>
@@ -101,7 +101,7 @@
 						<div class="form-group required v2_settings sensitive">
 							<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_merchant; ?></label>
 							<div class="col-sm-3">
-							  <input type="text" name="duitku_va_mandiri_merchant" value="<?php echo $duitku_va_mandiri_merchant; ?>" id="input-merchant-id" class="form-control" />
+							  <input type="text" name="duitku_va_bca_merchant" value="<?php echo $duitku_va_bca_merchant; ?>" id="input-merchant-id" class="form-control" />
 							</div>
 							<div class="col-sm-7">
 								<?php if (isset($error['server_key_v2'])) { ?>
@@ -114,7 +114,7 @@
 						<div class="form-group required v2_settings sensitive">
 							<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_api_key; ?></label>
 							<div class="col-sm-3">
-							  <input type="text" name="duitku_va_mandiri_api_key" value="<?php echo $duitku_va_mandiri_api_key; ?>" id="input-merchant-id" class="form-control" />
+							  <input type="text" name="duitku_va_bca_api_key" value="<?php echo $duitku_va_bca_api_key; ?>" id="input-merchant-id" class="form-control" />
 							</div>
 							<div class="col-sm-7">
 								<?php if (isset($error['client_key_v2'])) { ?>
@@ -127,7 +127,7 @@
 						<div class="form-group required v2_settings sensitive">
 							<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_expired_period; ?></label>
 							<div class="col-sm-3">
-							  <input type="number" name="duitku_va_mandiri_expired" value="<?php echo $duitku_va_mandiri_expired; ?>" id="input-merchant-id" class="form-control" />
+							  <input type="number" name="duitku_va_bca_expired" value="<?php echo $duitku_va_bca_expired; ?>" id="input-merchant-id" class="form-control" />
 							</div>
 							<div class="col-sm-7">
 								<?php if (isset($error['expired_period'])) { ?>
@@ -139,7 +139,7 @@
 						
 		
 
-					<?php foreach (array('duitku_va_mandiri_success_mapping', 'duitku_va_mandiri_pending_mapping', 'duitku_va_mandiri_failure_mapping') as $status): ?>
+					<?php foreach (array('duitku_va_bca_success_mapping', 'duitku_va_bca_pending_mapping', 'duitku_va_bca_failure_mapping') as $status): ?>
 						<div class="form-group required">
 						<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo ${'entry_' . $status} ?></label>
 							<div class="col-sm-3">
@@ -156,10 +156,10 @@
 					<div class="form-group">
 						<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_geo_zone; ?></label>
 							<div class="col-sm-3">
-								<select name="duitku_va_mandiri_geo_zone_id"  class="form-control">
+								<select name="duitku_va_bca_geo_zone_id"  class="form-control">
 								<option value="0"><?php echo $text_all_zones; ?></option>
 								<?php foreach ($geo_zones as $geo_zone) { ?>
-									<?php if ($geo_zone['geo_zone_id'] == $duitku_va_mandiri_geo_zone_id) { ?>
+									<?php if ($geo_zone['geo_zone_id'] == $duitku_va_bca_geo_zone_id) { ?>
 									<option value="<?php echo $geo_zone['geo_zone_id']; ?>" selected="selected"><?php echo $geo_zone['name']; ?></option>
 									<?php } else { ?>
 									<option value="<?php echo $geo_zone['geo_zone_id']; ?>"><?php echo $geo_zone['name']; ?></option>
@@ -173,7 +173,7 @@
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_sort_order; ?></label>
 							<div class="col-sm-1">
-							  <input size="1" type="text" name="duitku_va_mandiri_sort_order" value="<?php echo $duitku_va_mandiri_sort_order; ?>" class="form-control" />
+							  <input size="1" type="text" name="duitku_va_bca_sort_order" value="<?php echo $duitku_va_bca_sort_order; ?>" class="form-control" />
 							</div>
 						</div>
 						<div>
