@@ -33,3 +33,8 @@
 -----
 - Update channel Mandiri Virtual Account become Deprecated
 - add channels to VA Mandiri Direct
+
+2.4
+-----
+- Update channel Dana
+- Update channel LinkAja Fixed and Percentage
