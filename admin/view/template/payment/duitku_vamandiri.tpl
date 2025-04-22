@@ -20,6 +20,7 @@
     <!-- heading -->
 
 	<div class="content">								
+    <h4 class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>This Payment Method will be removed in future release</h4>
 		<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form" class="form-horizontal">
  		<table class="form">
           <tr>
@@ -127,7 +128,7 @@
         </table>
       </form>
       <div>
-              <center><font size="1">version 2.2</font></center>
+              <center><font size="1">version 2.3 - This Payment Method will be removed in future release</font></center>
             </div>
     </div>
     <!-- content -->
