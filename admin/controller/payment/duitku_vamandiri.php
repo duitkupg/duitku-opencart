@@ -34,6 +34,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
       'text_edit',
       'entry_merchant',
       'entry_api_key',          
+      'entry_expired_period',          
       'entry_test',
       'entry_total',
       'entry_order_status',
@@ -87,6 +88,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
       'duitku_vamandiri_merchant',
       'duitku_vamandiri_environment',
       'duitku_vamandiri_api_key',
+      'duitku_vamandiri_expired',
       'duitku_vamandiri_endpoint',      
       'duitku_vamandiri_debug',
       'duitku_vamandiri_total',
@@ -155,7 +157,11 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
 
     if (!$this->request->post['duitku_vamandiri_merchant']) {
       $this->error['server_key_v2'] = $this->language->get('error_server_key');
-    }        
+    }
+
+	if (!$this->request->post['duitku_vamandiri_expired'] OR $this->request->post['duitku_vamandiri_expired'] > 1440 ) {
+		$this->error['expired_period'] = $this->language->get('error_expired_period');
+	}        
 
     if (!$this->request->post['duitku_vamandiri_endpoint']) {
       $this->error['endpoint'] = $this->language->get('error_endpoint');

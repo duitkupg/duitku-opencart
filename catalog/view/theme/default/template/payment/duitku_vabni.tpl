@@ -26,5 +26,5 @@
     });
   });
   </script>
-    <!-- v2 VT-Web form -->
+    <!-- v2 Duitku form -->
 <?php endif ?>

@@ -1,10 +1,10 @@
 <?php
-class ControllerPaymentDuitkuVabni extends Controller {
+class ControllerPaymentDuitkuShopeepay extends Controller {
 
   private $error = array();
 
   public function index() {
-    $this->load->language('payment/duitku_vabni');
+    $this->load->language('payment/duitku_shopeepay');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -14,7 +14,7 @@ class ControllerPaymentDuitkuVabni extends Controller {
 
 
     if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-      $this->model_setting_setting->editSetting('duitku_vabni', $this->request->post);
+      $this->model_setting_setting->editSetting('duitku_shopeepay', $this->request->post);
 
       $this->session->data['success'] = $this->language->get('text_success');
 
@@ -41,8 +41,8 @@ class ControllerPaymentDuitkuVabni extends Controller {
       'entry_geo_zone',
       'entry_status',
       'entry_sort_order',                              
-      'entry_duitku_vabni_success_mapping',
-      'entry_duitku_vabni_failure_mapping',      
+      'entry_duitku_shopeepay_success_mapping',
+      'entry_duitku_shopeepay_failure_mapping',      
       'entry_display_name',
       'entry_environment',
       'entry_endpoint',
@@ -76,31 +76,31 @@ class ControllerPaymentDuitkuVabni extends Controller {
 
     $this->data['breadcrumbs'][] = array(
       'text' => $this->language->get('heading_title'),
-      'href' => $this->url->link('payment/duitku_vabni', 'token=' . $this->session->data['token'], 'SSL'),
+      'href' => $this->url->link('payment/duitku_shopeepay', 'token=' . $this->session->data['token'], 'SSL'),
       'separator' => ' :: '
     );
 
-    $this->data['action'] = $this->url->link('payment/duitku_vabni', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['action'] = $this->url->link('payment/duitku_shopeepay', 'token=' . $this->session->data['token'], 'SSL');
 
     $this->data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL');
 
     $inputs = array(            
-      'duitku_vabni_merchant',
-      'duitku_vabni_environment',
-      'duitku_vabni_api_key',
-      'duitku_vabni_expired',
-      'duitku_vabni_endpoint',      
-      'duitku_vabni_debug',
-      'duitku_vabni_total',
-      'duitku_vabni_order_status_id',
-      'duitku_vabni_geo_zone_id',
-      'duitku_vabni_sort_order',              
-      'duitku_vabni_status',      
-      'duitku_vabni_success_mapping',
-      'duitku_vabni_failure_mapping',
-      'duitku_vabni_challenge_mapping',
-      'duitku_vabni_display_name',      
-      'duitku_vabni_sanitization',      
+      'duitku_shopeepay_merchant',
+      'duitku_shopeepay_environment',
+      'duitku_shopeepay_api_key',
+      'duitku_shopeepay_expired',
+      'duitku_shopeepay_endpoint',      
+      'duitku_shopeepay_debug',
+      'duitku_shopeepay_total',
+      'duitku_shopeepay_order_status_id',
+      'duitku_shopeepay_geo_zone_id',
+      'duitku_shopeepay_sort_order',              
+      'duitku_shopeepay_status',      
+      'duitku_shopeepay_success_mapping',
+      'duitku_shopeepay_failure_mapping',
+      'duitku_shopeepay_challenge_mapping',
+      'duitku_shopeepay_display_name',      
+      'duitku_shopeepay_sanitization',      
     );
 
     foreach ($inputs as $input) {
@@ -119,7 +119,7 @@ class ControllerPaymentDuitkuVabni extends Controller {
 
     $this->data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
 
-    $this->template = 'payment/duitku_vabni.tpl';
+    $this->template = 'payment/duitku_shopeepay.tpl';
     $this->children = array(
       'common/header',
       'common/footer'
@@ -141,29 +141,29 @@ class ControllerPaymentDuitkuVabni extends Controller {
   protected function validate() {
       
 
-    if (!$this->user->hasPermission('modify', 'payment/duitku_vabni')) {
+    if (!$this->user->hasPermission('modify', 'payment/duitku_shopeepay')) {
       $this->error['warning'] = $this->language->get('error_permission');
     }
 
     // check for empty values
-    if (!$this->request->post['duitku_vabni_display_name']) {
+    if (!$this->request->post['duitku_shopeepay_display_name']) {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }       
 
     // check for empty values
-    if (!$this->request->post['duitku_vabni_api_key']) {
+    if (!$this->request->post['duitku_shopeepay_api_key']) {
       $this->error['client_key_v2'] = $this->language->get('error_client_key');
     }
 
-    if (!$this->request->post['duitku_vabni_merchant']) {
+    if (!$this->request->post['duitku_shopeepay_merchant']) {
       $this->error['server_key_v2'] = $this->language->get('error_server_key');
     }
 
-	if (!$this->request->post['duitku_vabni_expired'] OR $this->request->post['duitku_vabni_expired'] > 1440 ) {
+	if (!$this->request->post['duitku_shopeepay_expired'] OR $this->request->post['duitku_shopeepay_expired'] > 60 ) {
 		$this->error['expired_period'] = $this->language->get('error_expired_period');
 	}        
 
-    if (!$this->request->post['duitku_vabni_endpoint']) {
+    if (!$this->request->post['duitku_shopeepay_endpoint']) {
       $this->error['endpoint'] = $this->language->get('error_endpoint');
     }        
         

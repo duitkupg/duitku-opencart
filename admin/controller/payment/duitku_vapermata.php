@@ -34,6 +34,7 @@ class ControllerPaymentDuitkuVapermata extends Controller {
       'text_edit',
       'entry_merchant',
       'entry_api_key',          
+      'entry_expired_period',          
       'entry_test',
       'entry_total',
       'entry_order_status',
@@ -87,6 +88,7 @@ class ControllerPaymentDuitkuVapermata extends Controller {
       'duitku_vapermata_merchant',
       'duitku_vapermata_environment',
       'duitku_vapermata_api_key',
+      'duitku_vapermata_expired',
       'duitku_vapermata_endpoint',      
       'duitku_vapermata_debug',
       'duitku_vapermata_total',
@@ -155,7 +157,11 @@ class ControllerPaymentDuitkuVapermata extends Controller {
 
     if (!$this->request->post['duitku_vapermata_merchant']) {
       $this->error['server_key_v2'] = $this->language->get('error_server_key');
-    }        
+    }
+
+	if (!$this->request->post['duitku_vapermata_expired'] OR $this->request->post['duitku_vapermata_expired'] > 1440 ) {
+		$this->error['expired_period'] = $this->language->get('error_expired_period');
+	}        
 
     if (!$this->request->post['duitku_vapermata_endpoint']) {
       $this->error['endpoint'] = $this->language->get('error_endpoint');

@@ -14,6 +14,7 @@ $_['entry_environment']  = 'Environment'; // v2 API only
 $_['entry_endpoint']     = 'URL Endpoint'; 
 $_['entry_merchant']     = 'Merchant ID:'; // v1 API only
 $_['entry_api_key']      = 'Merchant API Key'; // v1 API only
+$_['entry_expired_period']	= 'Expired Period';
 $_['entry_test']         = 'Test Mode:';
 $_['entry_total']        = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';
 $_['entry_order_status'] = 'Order Status:';

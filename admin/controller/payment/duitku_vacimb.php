@@ -34,6 +34,7 @@ class ControllerPaymentDuitkuVacimb extends Controller {
       'text_edit',
       'entry_merchant',
       'entry_api_key',          
+      'entry_expired_period',          
       'entry_test',
       'entry_total',
       'entry_order_status',
@@ -87,6 +88,7 @@ class ControllerPaymentDuitkuVacimb extends Controller {
       'duitku_vacimb_merchant',
       'duitku_vacimb_environment',
       'duitku_vacimb_api_key',
+      'duitku_vacimb_expired',
       'duitku_vacimb_endpoint',      
       'duitku_vacimb_debug',
       'duitku_vacimb_total',
@@ -155,7 +157,11 @@ class ControllerPaymentDuitkuVacimb extends Controller {
 
     if (!$this->request->post['duitku_vacimb_merchant']) {
       $this->error['server_key_v2'] = $this->language->get('error_server_key');
-    }        
+    }
+
+	if (!$this->request->post['duitku_vacimb_expired'] OR $this->request->post['duitku_vacimb_expired'] > 1440 ) {
+		$this->error['expired_period'] = $this->language->get('error_expired_period');
+	}        
 
     if (!$this->request->post['duitku_vacimb_endpoint']) {
       $this->error['endpoint'] = $this->language->get('error_endpoint');

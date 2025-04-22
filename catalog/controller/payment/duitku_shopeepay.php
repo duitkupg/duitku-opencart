@@ -2,7 +2,7 @@
 
 require_once(DIR_SYSTEM . 'library/duitku-php/Duitku.php');
 
-class ControllerPaymentDuitkuOvo extends Controller {
+class ControllerPaymentDuitkuShopeepay extends Controller {
 
   public function index() {
 
@@ -11,7 +11,7 @@ class ControllerPaymentDuitkuOvo extends Controller {
     
     $this->data['text_loading'] = $this->language->get('text_loading');
 
-    $this->data['process_order'] = $this->url->link('payment/duitku_ovo/process_order');
+    $this->data['process_order'] = $this->url->link('payment/duitku_shopeepay/process_order');
 
     
       // CODE HERE IF LOWER
@@ -29,10 +29,10 @@ class ControllerPaymentDuitkuOvo extends Controller {
    * If it runs successfully, it will redirect to Duitku payment page.
    */
   public function process_order() {    
-    $this->load->model('payment/duitku_ovo');
+    $this->load->model('payment/duitku_shopeepay');
     $this->load->model('checkout/order');
     $this->load->model('total/shipping');
-    $this->load->language('payment/duitku_ovo');
+    $this->load->language('payment/duitku_shopeepay');
 
     $this->data['errors'] = array();
 
@@ -41,8 +41,9 @@ class ControllerPaymentDuitkuOvo extends Controller {
     $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 
     //generate Signature
-    $merchant_code = $this->config->get('duitku_ovo_merchant');
-    $api_key = $this->config->get('duitku_ovo_api_key');
+    $merchant_code = $this->config->get('duitku_shopeepay_merchant');
+    $api_key = $this->config->get('duitku_shopeepay_api_key');
+	$expired = $this->config->get('duitku_shopeepay_expired') != null ? $this->config->get('duitku_shopeepay_expired') : 60;
     $order_id = $this->session->data['order_id'];
     $def_curr = $this->config->get('config_currency');
     $order_total = $def_curr == 'IDR' ? $order_info['total'] : $this->currency->convert($order_info['total'], $order_info['currency_code'], 'IDR');
@@ -117,7 +118,7 @@ class ControllerPaymentDuitkuOvo extends Controller {
     $params = array(
           'merchantCode' => $merchant_code, // API Key Merchant /
           'paymentAmount' => intval($order_total), //transform order into integer
-          'paymentMethod' => "OV",
+          'paymentMethod' => "SP",
           'merchantOrderId' => $order_id,
           'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
           'additionalParam' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
@@ -126,9 +127,9 @@ class ControllerPaymentDuitkuOvo extends Controller {
 		  'email' => $order_info['email'],
           'phoneNumber' => $order_info['telephone'],
           'signature' => $signature,
-		  'expiryPeriod' => 1440,       
-          'returnUrl' => $this->url->link('payment/duitku_ovo/landing_redir'),
-          'callbackUrl' => $this->url->link('payment/duitku_ovo/payment_notification'),
+		  'expiryPeriod' => $expired,       
+          'returnUrl' => $this->url->link('payment/duitku_shopeepay/landing_redir'),
+          'callbackUrl' => $this->url->link('payment/duitku_shopeepay/payment_notification'),
 		  'customerDetail' => $customerDetails,
 		  'itemDetails' => $item_details,
     );          
@@ -138,7 +139,7 @@ class ControllerPaymentDuitkuOvo extends Controller {
         ? true : false;   */
 
     try {     
-      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('duitku_ovo_endpoint'), $params);       
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('duitku_shopeepay_endpoint'), $params);       
        $this->redirect($redirUrl);
     }
     catch (Exception $e) {
@@ -152,7 +153,7 @@ class ControllerPaymentDuitkuOvo extends Controller {
    * Landing page when payment is finished or failure or customer pressed "back" button
    * The Cart is cleared here, so make sure customer reach this page to ensure the cart is emptied when payment succeed
    * payment finish/unfinish/error url :
-   * http://[your shop’s homepage]/index.php?route=payment/duitku_ovo/payment_notification
+   * http://[your shop’s homepage]/index.php?route=payment/duitku_shopeepay/payment_notification
    */
   public function landing_redir() {    
         
@@ -167,7 +168,7 @@ class ControllerPaymentDuitkuOvo extends Controller {
     }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
       //if deny, redirect to order checkout page again
       // $redirUrl = $this->url->link('checkout/cart');
-      $redirUrl = $this->url->link('payment/duitku_ovo/failure');
+      $redirUrl = $this->url->link('payment/duitku_shopeepay/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['order_id']) && !isset($_GET['resultCode'])){
@@ -182,7 +183,7 @@ class ControllerPaymentDuitkuOvo extends Controller {
   * redirect to payment failure using template & language (text template)
   */
   public function failure() {
-    $this->load->language('payment/duitku_ovo');
+    $this->load->language('payment/duitku_shopeepay');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -219,28 +220,28 @@ class ControllerPaymentDuitkuOvo extends Controller {
     header("HTTP/1.1 200 OK");
 
     $this->load->model('checkout/order');
-    $this->load->model('payment/duitku_ovo');
+    $this->load->model('payment/duitku_shopeepay');
 
     
     if (empty($_REQUEST['resultCode']) || empty($_REQUEST['merchantOrderId']) || empty($_REQUEST['reference'])) {
-          throw new Exception(__('wrong query string please contact admin.', 'duitku_ovo'));
+          throw new Exception(__('wrong query string please contact admin.', 'duitku_shopeepay'));
     }    
 
     $order_id = stripslashes($_REQUEST['merchantOrderId']);
     $status = stripslashes($_REQUEST['resultCode']);
     $reference = stripslashes($_REQUEST['reference']);
-    $api_key = $this->config->get('duitku_ovo_api_key');
-    $merchant_code = $this->config->get('duitku_ovo_merchant');    
-    $endpoint = $this->config->get('duitku_ovo_endpoint');
+    $api_key = $this->config->get('duitku_shopeepay_api_key');
+    $merchant_code = $this->config->get('duitku_shopeepay_merchant');    
+    $endpoint = $this->config->get('duitku_shopeepay_endpoint');
 
     $order_info = $this->model_checkout_order->getOrder($order_id);        
 
     //check if order id is in the database
     if ($order_info) {        
         if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key)) {
-          $order_status_id = $this->config->get('duitku_ovo_success_mapping');          
+          $order_status_id = $this->config->get('duitku_shopeepay_success_mapping');          
         } else {
-          $order_status_id = $this->config->get('duitku_ovo_failure_mapping');       
+          $order_status_id = $this->config->get('duitku_shopeepay_failure_mapping');       
         }     
 
         if (!$order_info['order_status_id']) {

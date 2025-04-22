@@ -34,6 +34,7 @@ class ControllerPaymentDuitkuVamaybank extends Controller {
       'text_edit',
       'entry_merchant',
       'entry_api_key',          
+      'entry_expired_period',          
       'entry_test',
       'entry_total',
       'entry_order_status',
@@ -87,6 +88,7 @@ class ControllerPaymentDuitkuVamaybank extends Controller {
       'duitku_vamaybank_merchant',
       'duitku_vamaybank_environment',
       'duitku_vamaybank_api_key',
+      'duitku_vamaybank_expired',
       'duitku_vamaybank_endpoint',      
       'duitku_vamaybank_debug',
       'duitku_vamaybank_total',
@@ -155,7 +157,11 @@ class ControllerPaymentDuitkuVamaybank extends Controller {
 
     if (!$this->request->post['duitku_vamaybank_merchant']) {
       $this->error['server_key_v2'] = $this->language->get('error_server_key');
-    }        
+    }
+
+	if (!$this->request->post['duitku_vamaybank_expired'] OR $this->request->post['duitku_vamaybank_expired'] > 1440 ) {
+		$this->error['expired_period'] = $this->language->get('error_expired_period');
+	}        
 
     if (!$this->request->post['duitku_vamaybank_endpoint']) {
       $this->error['endpoint'] = $this->language->get('error_endpoint');

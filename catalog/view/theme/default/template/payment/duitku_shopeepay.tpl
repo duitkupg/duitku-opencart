@@ -12,7 +12,7 @@
   <script>
   $('#button-confirm').on('click', function() {
     $.ajax({
-      url: 'index.php?route=payment/duitku_vacimb/process_order',
+      url: 'index.php?route=payment/duitku_shopeepay/process_order',
       cache: false,
       beforeSend: function() {
         $('#button-confirm').button('loading');
