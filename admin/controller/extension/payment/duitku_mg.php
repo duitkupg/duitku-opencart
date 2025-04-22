@@ -1,20 +1,20 @@
 <?php
-class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
+class ControllerExtensionPaymentDuitkuMG extends Controller {
 
   private $error = array();
 
   public function index() {
-    $this->load->language('extension/payment/duitku_shopeepay');
+    $this->load->language('extension/payment/duitku_mg');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
     $this->load->model('setting/setting');
     $this->load->model('localisation/order_status');
-    $this->config->get('currency');
+    $this->config->get('curency');
 
 
     if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-      $this->model_setting_setting->editSetting('duitku_shopeepay', $this->request->post);
+      $this->model_setting_setting->editSetting('duitku_mg', $this->request->post);
 
       $this->session->data['success'] = $this->language->get('text_success');
 
@@ -22,6 +22,7 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
     }
 
     $language_entries = array(
+
       'heading_title',
       'text_enabled',
       'text_disabled',
@@ -32,7 +33,8 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
       'text_all_zones',
       'text_edit',
       'entry_merchant',
-      'entry_api_key',          
+      'entry_api_key',
+      'entry_credcode',          
       'entry_expired_period',
       'entry_test',
       'entry_total',
@@ -40,9 +42,8 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
       'entry_geo_zone',
       'entry_status',
       'entry_sort_order',                              
-      'entry_duitku_shopeepay_success_mapping',
-	  'entry_duitku_shopeepay_pending_mapping',
-      'entry_duitku_shopeepay_failure_mapping',      
+      'entry_duitku_mg_success_mapping',
+      'entry_duitku_mg_failure_mapping',      
       'entry_display_name',
       'entry_environment',
       'entry_endpoint',
@@ -76,32 +77,32 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
 
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('heading_title'),
-      'href' => $this->url->link('extension/payment/duitku_shopeepay', 'token=' . $this->session->data['token'], 'SSL'),
+      'href' => $this->url->link('extension/payment/duitku_mg', 'token=' . $this->session->data['token'], 'SSL'),
       'separator' => ' :: '
     );
 
-    $data['action'] = $this->url->link('extension/payment/duitku_shopeepay', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action'] = $this->url->link('extension/payment/duitku_mg', 'token=' . $this->session->data['token'], 'SSL');
 
     $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL');
 
     $inputs = array(            
-      'duitku_shopeepay_merchant',
-      'duitku_shopeepay_environment',
-      'duitku_shopeepay_api_key',
-      'duitku_shopeepay_expired',
-      'duitku_shopeepay_endpoint',      
-      'duitku_shopeepay_debug',
-      'duitku_shopeepay_total',
-      'duitku_shopeepay_order_status_id',
-      'duitku_shopeepay_geo_zone_id',
-      'duitku_shopeepay_sort_order',              
-      'duitku_shopeepay_status',      
-      'duitku_shopeepay_success_mapping',
-	  'duitku_shopeepay_pending_mapping',
-      'duitku_shopeepay_failure_mapping',
-      'duitku_shopeepay_challenge_mapping',
-      'duitku_shopeepay_display_name',      
-      'duitku_shopeepay_sanitization',      
+      'duitku_mg_merchant',
+      'duitku_mg_environment',
+      'duitku_mg_api_key',
+      'duitku_mg_credcode',
+      'duitku_mg_expired',
+      'duitku_mg_endpoint',      
+      'duitku_mg_debug',
+      'duitku_mg_total',
+      'duitku_mg_order_status_id',
+      'duitku_mg_geo_zone_id',
+      'duitku_mg_sort_order',              
+      'duitku_mg_status',      
+      'duitku_mg_success_mapping',
+      'duitku_mg_failure_mapping',
+      'duitku_mg_challenge_mapping',
+      'duitku_mg_display_name',      
+      'duitku_mg_sanitization',      
     );
 
     foreach ($inputs as $input) {
@@ -133,39 +134,36 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
   {
     $data['curr'] = false;
   }
-  $this->response->setOutput($this->load->view('extension/payment/duitku_shopeepay.tpl',$data));
+  $this->response->setOutput($this->load->view('extension/payment/duitku_mg.tpl',$data));
   
   }
 
   protected function validate() {
       
 
-    if (!$this->user->hasPermission('modify', 'extension/payment/duitku_shopeepay')) {
+    if (!$this->user->hasPermission('modify', 'extension/payment/duitku_mg')) {
       $this->error['warning'] = $this->language->get('error_permission');
     }
 
     // check for empty values
-    if (!$this->request->post['duitku_shopeepay_display_name']) {
+    if (!$this->request->post['duitku_mg_display_name']) {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }
         
 
-	// check for empty values
-	if (!$this->request->post['duitku_shopeepay_api_key']) {
-		$this->error['client_key_v2'] = $this->language->get('error_client_key');
-	}
+      // check for empty values
+      if (!$this->request->post['duitku_mg_api_key']) {
+        $this->error['client_key_v2'] = $this->language->get('error_client_key');
+      }
 
-	if (!$this->request->post['duitku_shopeepay_merchant']) {
-		$this->error['server_key_v2'] = $this->language->get('error_server_key');
-	}        
+      if (!$this->request->post['duitku_mg_merchant']) {
+        $this->error['server_key_v2'] = $this->language->get('error_server_key');
+      }        
+      
 
-	if (!$this->request->post['duitku_shopeepay_expired'] OR $this->request->post['duitku_shopeepay_expired'] > 60 ) {
-		$this->error['expired_period'] = $this->language->get('error_expired_period');
-	} 
-
-	if (!$this->request->post['duitku_shopeepay_endpoint']) {
-		$this->error['endpoint'] = $this->language->get('error_endpoint');
-	}        
+     if (!$this->request->post['duitku_mg_endpoint']) {
+        $this->error['endpoint'] = $this->language->get('error_endpoint');
+      }        
 
     if (!$this->error) {
       return true;

@@ -1,10 +1,10 @@
 <?php
-class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
+class ControllerExtensionPaymentDuitkuDANA extends Controller {
 
   private $error = array();
 
   public function index() {
-    $this->load->language('extension/payment/duitku_shopeepay');
+    $this->load->language('extension/payment/duitku_dana');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -14,7 +14,7 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
 
 
     if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-      $this->model_setting_setting->editSetting('duitku_shopeepay', $this->request->post);
+      $this->model_setting_setting->editSetting('duitku_dana', $this->request->post);
 
       $this->session->data['success'] = $this->language->get('text_success');
 
@@ -40,9 +40,9 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
       'entry_geo_zone',
       'entry_status',
       'entry_sort_order',                              
-      'entry_duitku_shopeepay_success_mapping',
-	  'entry_duitku_shopeepay_pending_mapping',
-      'entry_duitku_shopeepay_failure_mapping',      
+      'entry_duitku_dana_success_mapping',
+	  'entry_duitku_dana_pending_mapping',
+      'entry_duitku_dana_failure_mapping',      
       'entry_display_name',
       'entry_environment',
       'entry_endpoint',
@@ -76,32 +76,32 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
 
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('heading_title'),
-      'href' => $this->url->link('extension/payment/duitku_shopeepay', 'token=' . $this->session->data['token'], 'SSL'),
+      'href' => $this->url->link('extension/payment/duitku_dana', 'token=' . $this->session->data['token'], 'SSL'),
       'separator' => ' :: '
     );
 
-    $data['action'] = $this->url->link('extension/payment/duitku_shopeepay', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action'] = $this->url->link('extension/payment/duitku_dana', 'token=' . $this->session->data['token'], 'SSL');
 
     $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL');
 
     $inputs = array(            
-      'duitku_shopeepay_merchant',
-      'duitku_shopeepay_environment',
-      'duitku_shopeepay_api_key',
-      'duitku_shopeepay_expired',
-      'duitku_shopeepay_endpoint',      
-      'duitku_shopeepay_debug',
-      'duitku_shopeepay_total',
-      'duitku_shopeepay_order_status_id',
-      'duitku_shopeepay_geo_zone_id',
-      'duitku_shopeepay_sort_order',              
-      'duitku_shopeepay_status',      
-      'duitku_shopeepay_success_mapping',
-	  'duitku_shopeepay_pending_mapping',
-      'duitku_shopeepay_failure_mapping',
-      'duitku_shopeepay_challenge_mapping',
-      'duitku_shopeepay_display_name',      
-      'duitku_shopeepay_sanitization',      
+      'duitku_dana_merchant',
+      'duitku_dana_environment',
+      'duitku_dana_api_key',
+      'duitku_dana_expired',
+      'duitku_dana_endpoint',      
+      'duitku_dana_debug',
+      'duitku_dana_total',
+      'duitku_dana_order_status_id',
+      'duitku_dana_geo_zone_id',
+      'duitku_dana_sort_order',              
+      'duitku_dana_status',      
+      'duitku_dana_success_mapping',
+	  'duitku_dana_pending_mapping',
+      'duitku_dana_failure_mapping',
+      'duitku_dana_challenge_mapping',
+      'duitku_dana_display_name',      
+      'duitku_dana_sanitization',      
     );
 
     foreach ($inputs as $input) {
@@ -133,37 +133,37 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
   {
     $data['curr'] = false;
   }
-  $this->response->setOutput($this->load->view('extension/payment/duitku_shopeepay.tpl',$data));
+  $this->response->setOutput($this->load->view('extension/payment/duitku_dana.tpl',$data));
   
   }
 
   protected function validate() {
       
 
-    if (!$this->user->hasPermission('modify', 'extension/payment/duitku_shopeepay')) {
+    if (!$this->user->hasPermission('modify', 'extension/payment/duitku_dana')) {
       $this->error['warning'] = $this->language->get('error_permission');
     }
 
     // check for empty values
-    if (!$this->request->post['duitku_shopeepay_display_name']) {
+    if (!$this->request->post['duitku_dana_display_name']) {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }
         
 
 	// check for empty values
-	if (!$this->request->post['duitku_shopeepay_api_key']) {
+	if (!$this->request->post['duitku_dana_api_key']) {
 		$this->error['client_key_v2'] = $this->language->get('error_client_key');
 	}
 
-	if (!$this->request->post['duitku_shopeepay_merchant']) {
+	if (!$this->request->post['duitku_dana_merchant']) {
 		$this->error['server_key_v2'] = $this->language->get('error_server_key');
-	}        
-
-	if (!$this->request->post['duitku_shopeepay_expired'] OR $this->request->post['duitku_shopeepay_expired'] > 60 ) {
-		$this->error['expired_period'] = $this->language->get('error_expired_period');
 	} 
 
-	if (!$this->request->post['duitku_shopeepay_endpoint']) {
+	if (!$this->request->post['duitku_dana_expired'] OR $this->request->post['duitku_dana_expired'] > 1440 ) {
+		$this->error['expired_period'] = $this->language->get('error_expired_period');
+	}        
+
+	if (!$this->request->post['duitku_dana_endpoint']) {
 		$this->error['endpoint'] = $this->language->get('error_endpoint');
 	}        
 
