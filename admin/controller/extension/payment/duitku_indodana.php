@@ -1,20 +1,20 @@
 <?php
-class ControllerExtensionPaymentDuitkuCC extends Controller {
+class ControllerExtensionPaymentDuitkuIndodana extends Controller {
 
   private $error = array();
 
   public function index() {
-    $this->load->language('extension/payment/duitku_cc');
+    $this->load->language('extension/payment/duitku_indodana');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
     $this->load->model('setting/setting');
     $this->load->model('localisation/order_status');
-    $this->config->get('curency');
+    $this->config->get('currency');
 
 
     if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-      $this->model_setting_setting->editSetting('duitku_cc', $this->request->post);
+      $this->model_setting_setting->editSetting('duitku_indodana', $this->request->post);
 
       $this->session->data['success'] = $this->language->get('text_success');
 
@@ -22,7 +22,6 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
     }
 
     $language_entries = array(
-
       'heading_title',
       'text_enabled',
       'text_disabled',
@@ -41,8 +40,9 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
       'entry_geo_zone',
       'entry_status',
       'entry_sort_order',                              
-      'entry_duitku_cc_success_mapping',
-      'entry_duitku_cc_failure_mapping',      
+      'entry_duitku_indodana_success_mapping',
+	  'entry_duitku_indodana_pending_mapping',
+      'entry_duitku_indodana_failure_mapping',      
       'entry_display_name',
       'entry_environment',
       'entry_endpoint',
@@ -76,31 +76,32 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
 
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('heading_title'),
-      'href' => $this->url->link('extension/payment/duitku_cc', 'token=' . $this->session->data['token'], 'SSL'),
+      'href' => $this->url->link('extension/payment/duitku_indodana', 'token=' . $this->session->data['token'], 'SSL'),
       'separator' => ' :: '
     );
 
-    $data['action'] = $this->url->link('extension/payment/duitku_cc', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action'] = $this->url->link('extension/payment/duitku_indodana', 'token=' . $this->session->data['token'], 'SSL');
 
     $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL');
 
     $inputs = array(            
-      'duitku_cc_merchant',
-      'duitku_cc_environment',
-      'duitku_cc_api_key',
-      'duitku_cc_expired',
-      'duitku_cc_endpoint',      
-      'duitku_cc_debug',
-      'duitku_cc_total',
-      'duitku_cc_order_status_id',
-      'duitku_cc_geo_zone_id',
-      'duitku_cc_sort_order',              
-      'duitku_cc_status',      
-      'duitku_cc_success_mapping',
-      'duitku_cc_failure_mapping',
-      'duitku_cc_challenge_mapping',
-      'duitku_cc_display_name',      
-      'duitku_cc_sanitization',      
+      'duitku_indodana_merchant',
+      'duitku_indodana_environment',
+      'duitku_indodana_api_key',
+      'duitku_indodana_expired',
+      'duitku_indodana_endpoint',      
+      'duitku_indodana_debug',
+      'duitku_indodana_total',
+      'duitku_indodana_order_status_id',
+      'duitku_indodana_geo_zone_id',
+      'duitku_indodana_sort_order',              
+      'duitku_indodana_status',      
+      'duitku_indodana_success_mapping',
+	  'duitku_indodana_pending_mapping',
+      'duitku_indodana_failure_mapping',
+      'duitku_indodana_challenge_mapping',
+      'duitku_indodana_display_name',      
+      'duitku_indodana_sanitization',      
     );
 
     foreach ($inputs as $input) {
@@ -132,34 +133,34 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
   {
     $data['curr'] = false;
   }
-  $this->response->setOutput($this->load->view('extension/payment/duitku_cc.tpl',$data));
+  $this->response->setOutput($this->load->view('extension/payment/duitku_indodana.tpl',$data));
   
   }
 
   protected function validate() {
       
 
-    if (!$this->user->hasPermission('modify', 'extension/payment/duitku_cc')) {
+    if (!$this->user->hasPermission('modify', 'extension/payment/duitku_indodana')) {
       $this->error['warning'] = $this->language->get('error_permission');
     }
 
     // check for empty values
-    if (!$this->request->post['duitku_cc_display_name']) {
+    if (!$this->request->post['duitku_indodana_display_name']) {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }
         
 
       // check for empty values
-      if (!$this->request->post['duitku_cc_api_key']) {
+      if (!$this->request->post['duitku_indodana_api_key']) {
         $this->error['client_key_v2'] = $this->language->get('error_client_key');
       }
 
-      if (!$this->request->post['duitku_cc_merchant']) {
+      if (!$this->request->post['duitku_indodana_merchant']) {
         $this->error['server_key_v2'] = $this->language->get('error_server_key');
       }        
       
 
-     if (!$this->request->post['duitku_cc_endpoint']) {
+     if (!$this->request->post['duitku_indodana_endpoint']) {
         $this->error['endpoint'] = $this->language->get('error_endpoint');
       }        
 
