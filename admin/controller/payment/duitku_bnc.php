@@ -1,10 +1,10 @@
 <?php
-class ControllerPaymentDuitkuVamandiri extends Controller {
+class ControllerPaymentDuitkuBnc extends Controller {
 
   private $error = array();
 
   public function index() {
-    $this->load->language('payment/duitku_vamandiri');
+    $this->load->language('payment/duitku_bnc');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -14,7 +14,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
 
 
     if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-      $this->model_setting_setting->editSetting('duitku_vamandiri', $this->request->post);
+      $this->model_setting_setting->editSetting('duitku_bnc', $this->request->post);
 
       $this->session->data['success'] = $this->language->get('text_success');
 
@@ -41,8 +41,8 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
       'entry_geo_zone',
       'entry_status',
       'entry_sort_order',                              
-      'entry_duitku_vamandiri_success_mapping',
-      'entry_duitku_vamandiri_failure_mapping',      
+      'entry_duitku_bnc_success_mapping',
+      'entry_duitku_bnc_failure_mapping',      
       'entry_display_name',
       'entry_environment',
       'entry_endpoint',
@@ -76,31 +76,31 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
 
     $this->data['breadcrumbs'][] = array(
       'text' => $this->language->get('heading_title'),
-      'href' => $this->url->link('payment/duitku_vamandiri', 'token=' . $this->session->data['token'], 'SSL'),
+      'href' => $this->url->link('payment/duitku_bnc', 'token=' . $this->session->data['token'], 'SSL'),
       'separator' => ' :: '
     );
 
-    $this->data['action'] = $this->url->link('payment/duitku_vamandiri', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['action'] = $this->url->link('payment/duitku_bnc', 'token=' . $this->session->data['token'], 'SSL');
 
     $this->data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL');
 
     $inputs = array(            
-      'duitku_vamandiri_merchant',
-      'duitku_vamandiri_environment',
-      'duitku_vamandiri_api_key',
-      'duitku_vamandiri_expired',
-      'duitku_vamandiri_endpoint',      
-      'duitku_vamandiri_debug',
-      'duitku_vamandiri_total',
-      'duitku_vamandiri_order_status_id',
-      'duitku_vamandiri_geo_zone_id',
-      'duitku_vamandiri_sort_order',              
-      'duitku_vamandiri_status',      
-      'duitku_vamandiri_success_mapping',
-      'duitku_vamandiri_failure_mapping',
-      'duitku_vamandiri_challenge_mapping',
-      'duitku_vamandiri_display_name',      
-      'duitku_vamandiri_sanitization',      
+      'duitku_bnc_merchant',
+      'duitku_bnc_environment',
+      'duitku_bnc_api_key',
+      'duitku_bnc_expired',
+      'duitku_bnc_endpoint',      
+      'duitku_bnc_debug',
+      'duitku_bnc_total',
+      'duitku_bnc_order_status_id',
+      'duitku_bnc_geo_zone_id',
+      'duitku_bnc_sort_order',              
+      'duitku_bnc_status',      
+      'duitku_bnc_success_mapping',
+      'duitku_bnc_failure_mapping',
+      'duitku_bnc_challenge_mapping',
+      'duitku_bnc_display_name',      
+      'duitku_bnc_sanitization',      
     );
 
     foreach ($inputs as $input) {
@@ -119,7 +119,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
 
     $this->data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
 
-    $this->template = 'payment/duitku_vamandiri.tpl';
+    $this->template = 'payment/duitku_bnc.tpl';
     $this->children = array(
       'common/header',
       'common/footer'
@@ -141,29 +141,29 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
   protected function validate() {
       
 
-    if (!$this->user->hasPermission('modify', 'payment/duitku_vamandiri')) {
+    if (!$this->user->hasPermission('modify', 'payment/duitku_bnc')) {
       $this->error['warning'] = $this->language->get('error_permission');
     }
 
     // check for empty values
-    if (!$this->request->post['duitku_vamandiri_display_name']) {
+    if (!$this->request->post['duitku_bnc_display_name']) {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }       
 
     // check for empty values
-    if (!$this->request->post['duitku_vamandiri_api_key']) {
+    if (!$this->request->post['duitku_bnc_api_key']) {
       $this->error['client_key_v2'] = $this->language->get('error_client_key');
     }
 
-    if (!$this->request->post['duitku_vamandiri_merchant']) {
+    if (!$this->request->post['duitku_bnc_merchant']) {
       $this->error['server_key_v2'] = $this->language->get('error_server_key');
     }
 
-	if (!$this->request->post['duitku_vamandiri_expired'] OR $this->request->post['duitku_vamandiri_expired'] > 1440 ) {
+	if (!$this->request->post['duitku_bnc_expired'] OR $this->request->post['duitku_bnc_expired'] > 1440 ) {
 		$this->error['expired_period'] = $this->language->get('error_expired_period');
 	}        
 
-    if (!$this->request->post['duitku_vamandiri_endpoint']) {
+    if (!$this->request->post['duitku_bnc_endpoint']) {
       $this->error['endpoint'] = $this->language->get('error_endpoint');
     }        
         

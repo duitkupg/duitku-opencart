@@ -38,3 +38,8 @@
 2.9
 -----
 - Update channel POS Payment
+
+2.10
+-----
+- add channels to Bank Neo Commerce
+- remove Deprecated channel Mandiri Virtual Account 

@@ -1,11 +1,11 @@
 <?php
 // Heading
-$_['heading_title']      = 'Duitku Va Mandiri (Deprecated)';
+$_['heading_title']      = 'Duitku BNC/Bank Neo Commerce';
 
 // Text
 $_['text_payment']       = 'Payment';
 $_['text_success']       = 'Success: You have modified Duitku account details!';
-$_['text_duitku_vamandiri']= '<img src="view/image/payment/vamandiri.png" width="60" height = "25" alt="Duitku Va Mandiri (Deprecated)" title="Duitku" style="border: 1px solid #EEEEEE;" />';
+$_['text_duitku_bnc']= '<img src="view/image/payment/bnc.png" width="60" height = "25" alt="Duitku BNC/Bank Neo Commerce" title="Duitku" style="border: 1px solid #EEEEEE;" />';
 $_['text_live']          = 'Production';
 $_['text_successful']    = 'Always Successful';
 $_['text_fail']          = 'Always Fail';
@@ -21,8 +21,8 @@ $_['entry_order_status'] = 'Order Status:';
 $_['entry_geo_zone']     = 'Geo Zone:';
 $_['entry_status']       = 'Status:';
 $_['entry_sort_order']   = 'Sort Order:';
-$_['entry_duitku_vamandiri_success_mapping'] = 'Map Payment Success Status to Order Status:';
-$_['entry_duitku_vamandiri_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
+$_['entry_duitku_bnc_success_mapping'] = 'Map Payment Success Status to Order Status:';
+$_['entry_duitku_bnc_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
 $_['entry_display_name'] = 'Display name:';
 
 // Error

@@ -12,7 +12,7 @@
   <script>
   $('#button-confirm').on('click', function() {
     $.ajax({
-      url: 'index.php?route=payment/duitku_vamandiri/process_order',
+      url: 'index.php?route=payment/duitku_bnc/process_order',
       cache: false,
       beforeSend: function() {
         $('#button-confirm').button('loading');

@@ -2,7 +2,7 @@
 
 require_once(DIR_SYSTEM . 'library/duitku-php/Duitku.php');
 
-class ControllerPaymentDuitkuVamandiri extends Controller {
+class ControllerPaymentDuitkuBnc extends Controller {
 
   public function index() {
 
@@ -11,7 +11,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
     
     $this->data['text_loading'] = $this->language->get('text_loading');
 
-    $this->data['process_order'] = $this->url->link('payment/duitku_vamandiri/process_order');
+    $this->data['process_order'] = $this->url->link('payment/duitku_bnc/process_order');
 
     
       // CODE HERE IF LOWER
@@ -29,10 +29,10 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
    * If it runs successfully, it will redirect to Duitku payment page.
    */
   public function process_order() {    
-    $this->load->model('payment/duitku_vamandiri');
+    $this->load->model('payment/duitku_bnc');
     $this->load->model('checkout/order');
     $this->load->model('total/shipping');
-    $this->load->language('payment/duitku_vamandiri');
+    $this->load->language('payment/duitku_bnc');
 
     $this->data['errors'] = array();
 
@@ -41,9 +41,9 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
     $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 
     //generate Signature
-    $merchant_code = $this->config->get('duitku_vamandiri_merchant');
-    $api_key = $this->config->get('duitku_vamandiri_api_key');
-	$expired = $this->config->get('duitku_vamandiri_expired') != null ? $this->config->get('duitku_vamandiri_expired') : 1440;
+    $merchant_code = $this->config->get('duitku_bnc_merchant');
+    $api_key = $this->config->get('duitku_bnc_api_key');
+	$expired = $this->config->get('duitku_bnc_expired') != null ? $this->config->get('duitku_bnc_expired') : 1440;
     $order_id = $this->session->data['order_id'];
     $def_curr = $this->config->get('config_currency');
     $order_total = $def_curr == 'IDR' ? $order_info['total'] : $this->currency->convert($order_info['total'], $order_info['currency_code'], 'IDR');
@@ -118,7 +118,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
     $params = array(
           'merchantCode' => $merchant_code, // API Key Merchant /
           'paymentAmount' => intval($order_total), //transform order into integer
-          'paymentMethod' => "M1",
+          'paymentMethod' => "NC",
           'merchantOrderId' => $order_id,
           'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
           'additionalParam' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
@@ -128,8 +128,8 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
           'phoneNumber' => $order_info['telephone'],
           'signature' => $signature,
 		  'expiryPeriod' => $expired,       
-          'returnUrl' => $this->url->link('payment/duitku_vamandiri/landing_redir'),
-          'callbackUrl' => $this->url->link('payment/duitku_vamandiri/payment_notification'),
+          'returnUrl' => $this->url->link('payment/duitku_bnc/landing_redir'),
+          'callbackUrl' => $this->url->link('payment/duitku_bnc/payment_notification'),
 		  'customerDetail' => $customerDetails,
 		  'itemDetails' => $item_details,
     );          
@@ -139,7 +139,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
         ? true : false;   */
 
     try {     
-      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('duitku_vamandiri_endpoint'), $params);       
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('duitku_bnc_endpoint'), $params);       
        $this->redirect($redirUrl);
     }
     catch (Exception $e) {
@@ -153,7 +153,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
    * Landing page when payment is finished or failure or customer pressed "back" button
    * The Cart is cleared here, so make sure customer reach this page to ensure the cart is emptied when payment succeed
    * payment finish/unfinish/error url :
-   * http://[your shop’s homepage]/index.php?route=payment/duitku_vamandiri/payment_notification
+   * http://[your shop’s homepage]/index.php?route=payment/duitku_bnc/payment_notification
    */
   public function landing_redir() {    
         
@@ -168,7 +168,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
     }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
       //if deny, redirect to order checkout page again
       // $redirUrl = $this->url->link('checkout/cart');
-      $redirUrl = $this->url->link('payment/duitku_vamandiri/failure');
+      $redirUrl = $this->url->link('payment/duitku_bnc/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['order_id']) && !isset($_GET['resultCode'])){
@@ -183,7 +183,7 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
   * redirect to payment failure using template & language (text template)
   */
   public function failure() {
-    $this->load->language('payment/duitku_vamandiri');
+    $this->load->language('payment/duitku_bnc');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -220,28 +220,28 @@ class ControllerPaymentDuitkuVamandiri extends Controller {
     header("HTTP/1.1 200 OK");
 
     $this->load->model('checkout/order');
-    $this->load->model('payment/duitku_vamandiri');
+    $this->load->model('payment/duitku_bnc');
 
     
     if (empty($_REQUEST['resultCode']) || empty($_REQUEST['merchantOrderId']) || empty($_REQUEST['reference'])) {
-          throw new Exception(__('wrong query string please contact admin.', 'duitku_vamandiri'));
+          throw new Exception(__('wrong query string please contact admin.', 'duitku_bnc'));
     }    
 
     $order_id = stripslashes($_REQUEST['merchantOrderId']);
     $status = stripslashes($_REQUEST['resultCode']);
     $reference = stripslashes($_REQUEST['reference']);
-    $api_key = $this->config->get('duitku_vamandiri_api_key');
-    $merchant_code = $this->config->get('duitku_vamandiri_merchant');    
-    $endpoint = $this->config->get('duitku_vamandiri_endpoint');
+    $api_key = $this->config->get('duitku_bnc_api_key');
+    $merchant_code = $this->config->get('duitku_bnc_merchant');    
+    $endpoint = $this->config->get('duitku_bnc_endpoint');
 
     $order_info = $this->model_checkout_order->getOrder($order_id);        
 
     //check if order id is in the database
     if ($order_info) {        
         if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key)) {
-          $order_status_id = $this->config->get('duitku_vamandiri_success_mapping');          
+          $order_status_id = $this->config->get('duitku_bnc_success_mapping');          
         } else {
-          $order_status_id = $this->config->get('duitku_vamandiri_failure_mapping');       
+          $order_status_id = $this->config->get('duitku_bnc_failure_mapping');       
         }     
 
         if (!$order_info['order_status_id']) {
