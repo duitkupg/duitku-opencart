@@ -37,3 +37,8 @@
 2.9
 -----
 - add channels to PosPay
+
+2.10
+-----
+- add channels to Bank Neo Commerce
+- remove Deprecated channel Mandiri Virtual Account 

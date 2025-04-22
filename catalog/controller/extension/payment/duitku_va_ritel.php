@@ -132,7 +132,7 @@ class ControllerExtensionPaymentDuitkuVARitel extends Controller {
           'signature' => $signature,
 		  'expiryPeriod' => $expired,       
           'returnUrl' => $this->url->link('extension/payment/duitku_va_ritel/landing_redir'),
-          'callbackUrl' => $this->url->link('extension/payment/duitku_va_permata/payment_notification'),
+          'callbackUrl' => $this->url->link('extension/payment/duitku_va_ritel/payment_notification'),
 		  'customerDetail' => $customerDetails,
 		  'itemDetails' => $item_details,
     );        

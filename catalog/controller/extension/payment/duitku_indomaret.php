@@ -132,7 +132,7 @@ class ControllerExtensionPaymentDuitkuIndomaret extends Controller {
           'signature' => $signature,
 		  'expiryPeriod' => $expired,       
           'returnUrl' => $this->url->link('extension/payment/duitku_indomaret/landing_redir'),
-          'callbackUrl' => $this->url->link('extension/payment/duitku_va_permata/payment_notification'),
+          'callbackUrl' => $this->url->link('extension/payment/duitku_indomaret/payment_notification'),
 		  'customerDetail' => $customerDetails,
 		  'itemDetails' => $item_details,
     );        

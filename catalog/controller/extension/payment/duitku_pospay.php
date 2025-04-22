@@ -132,7 +132,7 @@ class ControllerExtensionPaymentDuitkuPosPay extends Controller {
           'signature' => $signature,
 		  'expiryPeriod' => $expired,       
           'returnUrl' => $this->url->link('extension/payment/duitku_pospay/landing_redir'),
-          'callbackUrl' => $this->url->link('extension/payment/duitku_va_permata/payment_notification'),
+          'callbackUrl' => $this->url->link('extension/payment/duitku_pospay/payment_notification'),
 		  'customerDetail' => $customerDetails,
 		  'itemDetails' => $item_details,
     );        
