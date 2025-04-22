@@ -73,3 +73,7 @@
 ----
 - Add channel VA Sahabat Sampoerna
 - Add channel Danamon Virtual Account
+
+2.11.6
+----
+- Add channel VA Bank Syariah Indonesia
