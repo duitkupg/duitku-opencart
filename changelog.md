@@ -63,4 +63,8 @@
 
 2.11.3
 ----
-- Add channel Gudang Voucher QRIS 
+- Add channel Gudang Voucher QRIS
+
+2.11.4
+----
+- Add channel Jenius Pay  
