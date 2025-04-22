@@ -5,7 +5,7 @@ $_['heading_title']      = 'Duitku Credit Card';
 // Text
 $_['text_payment']       = 'Payment';
 $_['text_success']       = 'Success: You have modified Duitku account details!';
-$_['text_duitku_cc'] = '<img src="view/image/payment/cc.png" width="60" height = "25" alt="Duitku Credit Card" title="Duitku" style="border: 1px solid #EEEEEE;" />';
+$_['text_duitku_cc'] = '<img src="view/image/payment/credit-card.png" width="60" height = "25" alt="Duitku Credit Card" title="Duitku" style="border: 1px solid #EEEEEE;" />';
 $_['text_live']          = 'Production';
 $_['text_successful']    = 'Always Successful';
 $_['text_fail']          = 'Always Fail';
@@ -15,7 +15,6 @@ $_['entry_environment']  = 'Environment'; // v2 API only
 $_['entry_endpoint']     = 'URL Endpoint'; 
 $_['entry_merchant']     = 'Merchant ID:'; // v1 API only
 $_['entry_api_key']      = 'Merchant API Key'; // v1 API only
-$_['entry_expired_period']	= 'Expired Period';
 $_['entry_test']         = 'Test Mode:';
 $_['entry_total']        = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';
 $_['entry_order_status'] = 'Order Status:';

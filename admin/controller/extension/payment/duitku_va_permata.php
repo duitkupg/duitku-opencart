@@ -33,7 +33,6 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
       'text_edit',
       'entry_merchant',
       'entry_api_key',          
-      'entry_expired_period',          
       'entry_test',
       'entry_total',
       'entry_order_status',
@@ -88,7 +87,6 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
       'payment_duitku_va_permata_merchant',
       'payment_duitku_va_permata_environment',
       'payment_duitku_va_permata_api_key',
-      'payment_duitku_va_permata_expired',
       'payment_duitku_va_permata_endpoint',      
       'payment_duitku_va_permata_debug',
       'payment_duitku_va_permata_total',
@@ -151,23 +149,19 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
     }
         
 
-	// check for empty values
-	if (!$this->request->post['payment_duitku_va_permata_api_key']) {
-		$this->error['client_key_v2'] = $this->language->get('error_client_key');
-	}
+      // check for empty values
+      if (!$this->request->post['payment_duitku_va_permata_api_key']) {
+        $this->error['client_key_v2'] = $this->language->get('error_client_key');
+      }
 
-	if (!$this->request->post['payment_duitku_va_permata_merchant']) {
-		$this->error['server_key_v2'] = $this->language->get('error_server_key');
-	}
+      if (!$this->request->post['payment_duitku_va_permata_merchant']) {
+        $this->error['server_key_v2'] = $this->language->get('error_server_key');
+      }        
+      
 
-	if (!$this->request->post['payment_duitku_va_permata_expired'] OR $this->request->post['payment_duitku_va_permata_expired'] > 1440 ) {
-		$this->error['expired_period'] = $this->language->get('error_expired_period');
-	}        
-
-
-	if (!$this->request->post['payment_duitku_va_permata_endpoint']) {
-		$this->error['endpoint'] = $this->language->get('error_endpoint');
-	}        
+     if (!$this->request->post['payment_duitku_va_permata_endpoint']) {
+        $this->error['endpoint'] = $this->language->get('error_endpoint');
+      }        
 
     if (!$this->error) {
       return true;

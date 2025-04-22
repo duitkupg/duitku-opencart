@@ -66,8 +66,8 @@
             <label class="col-sm-2 control-label" for="input-merchant">{{ entry_merchant }}</label>
             <div class="col-sm-10">
               <input type="text" name="payment_duitku_va_maybank_merchant" value="{{ payment_duitku_va_maybank_merchant }}" placeholder="{{ entry_merchant }}" id="input-merchant" class="form-control" />
-              {% if error.server_key_v2 %}
-              <div class="text-danger">{{ error.server_key_v2 }}</div>
+              {% if server_key_v2 %}
+              <div class="text-danger">{{ server_key_v2 }}</div>
               {% endif %}
             </div>
           </div>
@@ -77,22 +77,11 @@
             <label class="col-sm-2 control-label" for="payment_duitku_va_maybank_api_key">{{ entry_api_key }}</label>
             <div class="col-sm-10">
               <input type="text" name="payment_duitku_va_maybank_api_key" value="{{ payment_duitku_va_maybank_api_key }}" placeholder="{{ entry_api_key }}" id="payment_duitku_va_maybank_api_key" class="form-control" />
-              {% if error.client_key_v2 %}
-              <div class="text-danger">{{ error.client_key_v2 }}</div>
+              {% if client_key_v2 %}
+              <div class="text-danger">{{ client_key_v2 }}</div>
               {% endif %}
             </div>
           </div>
-		  
-		<div class="form-group required">
-			<label class="col-sm-2 control-label" for="payment_duitku_va_maybank_expired">{{ entry_expired_period }}</label>
-			<div class="col-sm-10">
-			  <input type="text" name="payment_duitku_va_maybank_expired" value="{{ payment_duitku_va_maybank_expired }}" placeholder="{{ entry_expired_period }}" id="payment_duitku_va_maybank_expired" class="form-control" />
-			
-              {% if error.expired_period %}
-				<div class="text-danger">{{ error.expired_period }}</div>
-              {% endif %}
-			</div>
-		</div>
 		  
 		  
 		  {% for status in statuses %}
@@ -135,7 +124,7 @@
             </div>
           </div>
 		<div>
-			<center><font size="1">version 2.3</font></center>
+			<center><font size="1">version v1.3.0</font></center>
 		</div>
 		  
         </form>

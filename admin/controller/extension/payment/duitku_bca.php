@@ -33,7 +33,6 @@ class ControllerExtensionPaymentDuitkuBCA extends Controller {
       'text_edit',
       'entry_merchant',
       'entry_api_key',          
-      'entry_expired_period',          
       'entry_test',
       'entry_total',
       'entry_order_status',
