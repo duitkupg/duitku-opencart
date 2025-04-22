@@ -18,5 +18,5 @@ This is the official Duitku extension for the OpenCart E-commerce platform.
 4. Enable Duitku payment gateway (e.g., Duitku BCA, Duitku Credit Card, etc) and
    required fields (Merchant code, Apikey, endpoints and Display name)
 
-5. In order to get the required fields please contact duitku admin : admin@duitku.com
+5. In order to get the required fields please contact duitku admin : support@duitku.com
 

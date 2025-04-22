@@ -55,3 +55,7 @@
 2.11.2
 ----
 - add channel atome
+
+2.11.3
+----
+- add channel jenius pay
