@@ -1,13 +1,11 @@
 <?php
-class ControllerExtensionPaymentDuitkuVAAtmbersama extends Controller {
+class ControllerExtensionPaymentDuitkuIndodana extends Controller {
 
   private $error = array();
 
   public function index() {
-    $this->load->language('extension/payment/duitku_va_atmbersama');
+    $this->load->language('extension/payment/duitku_indodana');
 
-	
-	$this->load->language('cache/cleaner');
     $this->document->setTitle($this->language->get('heading_title'));
 
     $this->load->model('setting/setting');
@@ -16,7 +14,7 @@ class ControllerExtensionPaymentDuitkuVAAtmbersama extends Controller {
 
 
     if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-      $this->model_setting_setting->editSetting('payment_duitku_va_atmbersama', $this->request->post);
+      $this->model_setting_setting->editSetting('payment_duitku_indodana', $this->request->post);
 
       $this->session->data['success'] = $this->language->get('text_success');
 
@@ -42,9 +40,9 @@ class ControllerExtensionPaymentDuitkuVAAtmbersama extends Controller {
       'entry_geo_zone',
       'entry_status',
       'entry_sort_order',                              
-      'entry_duitku_va_atmbersama_success_mapping',
-	  'entry_duitku_va_atmbersama_pending_mapping',
-      'entry_duitku_va_atmbersama_failure_mapping',      
+      'entry_duitku_indodana_success_mapping',
+	  'entry_duitku_indodana_pending_mapping',
+      'entry_duitku_indodana_failure_mapping',      
       'entry_display_name',
       'entry_environment',
       'entry_endpoint',
@@ -66,7 +64,7 @@ class ControllerExtensionPaymentDuitkuVAAtmbersama extends Controller {
 
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('text_home'),
-      'href' => $this->url->link('common/dashboard', 'user_token=' . @$this->session->data['user_token'], true),
+      'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true),
       // 'separator' => false
     );
 
@@ -78,32 +76,31 @@ class ControllerExtensionPaymentDuitkuVAAtmbersama extends Controller {
 
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('heading_title'),
-      'href' => $this->url->link('extension/payment/duitku_va_atmbersama', 'user_token=' . $this->session->data['user_token'], true),
+      'href' => $this->url->link('extension/payment/duitku_indodana', 'user_token=' . $this->session->data['user_token'], true),
       // 'separator' => ' :: '
     );
 
-    $data['action'] = $this->url->link('extension/payment/duitku_va_atmbersama', 'user_token=' . $this->session->data['user_token'], true);
+    $data['action'] = $this->url->link('extension/payment/duitku_indodana', 'user_token=' . $this->session->data['user_token'], true);
 
     $data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true);
 
     $inputs = array(            
-      'payment_duitku_va_atmbersama_merchant',
-      'payment_duitku_va_atmbersama_environment',
-      'payment_duitku_va_atmbersama_api_key',
-      'payment_duitku_va_atmbersama_expired',
-      'payment_duitku_va_atmbersama_endpoint',      
-      'payment_duitku_va_atmbersama_debug',
-      'payment_duitku_va_atmbersama_total',
-      'payment_duitku_va_atmbersama_order_status_id',
-      'payment_duitku_va_atmbersama_geo_zone_id',
-      'payment_duitku_va_atmbersama_sort_order',              
-      'payment_duitku_va_atmbersama_status',      
-      'payment_duitku_va_atmbersama_success_mapping',
-	  'payment_duitku_va_atmbersama_pending_mapping',
-      'payment_duitku_va_atmbersama_failure_mapping',
-      'payment_duitku_va_atmbersama_challenge_mapping',
-      'payment_duitku_va_atmbersama_display_name',      
-      'payment_duitku_va_atmbersama_sanitization',      
+      'payment_duitku_indodana_merchant',
+      'payment_duitku_indodana_environment',
+      'payment_duitku_indodana_api_key',
+      'payment_duitku_indodana_endpoint',      
+      'payment_duitku_indodana_debug',
+      'payment_duitku_indodana_total',
+      'payment_duitku_indodana_order_status_id',
+      'payment_duitku_indodana_geo_zone_id',
+      'payment_duitku_indodana_sort_order',              
+      'payment_duitku_indodana_status',      
+      'payment_duitku_indodana_success_mapping',
+	  'payment_duitku_indodana_pending_mapping',
+      'payment_duitku_indodana_failure_mapping',
+      'payment_duitku_indodana_challenge_mapping',
+      'payment_duitku_indodana_display_name',      
+      'payment_duitku_indodana_sanitization',      
     );
 
     foreach ($inputs as $input) {
@@ -116,7 +113,7 @@ class ControllerExtensionPaymentDuitkuVAAtmbersama extends Controller {
 
     $this->load->model('localisation/order_status');
 
-    $data['statuses'] = array('payment_duitku_va_atmbersama_success_mapping', 'payment_duitku_va_atmbersama_pending_mapping', 'payment_duitku_va_atmbersama_failure_mapping');
+	$data['statuses'] = array('payment_duitku_indodana_success_mapping', 'payment_duitku_indodana_pending_mapping', 'payment_duitku_indodana_failure_mapping');
     $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
 
     $this->load->model('localisation/geo_zone');
@@ -136,40 +133,36 @@ class ControllerExtensionPaymentDuitkuVAAtmbersama extends Controller {
   {
     $data['curr'] = false;
   }
-  $this->response->setOutput($this->load->view('extension/payment/duitku_va_atmbersama',$data));
+  $this->response->setOutput($this->load->view('extension/payment/duitku_indodana',$data));
   
   }
 
   protected function validate() {
       
 
-    if (!$this->user->hasPermission('modify', 'extension/payment/duitku_va_atmbersama')) {
+    if (!$this->user->hasPermission('modify', 'extension/payment/duitku_indodana')) {
       $this->error['warning'] = $this->language->get('error_permission');
     }
 
     // check for empty values
-    if (!$this->request->post['payment_duitku_va_atmbersama_display_name']) {
+    if (!$this->request->post['payment_duitku_indodana_display_name']) {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }
         
 
-	// check for empty values
-	if (!$this->request->post['payment_duitku_va_atmbersama_api_key']) {
-		$this->error['client_key_v2'] = $this->language->get('error_client_key');
-	}
+      // check for empty values
+      if (!$this->request->post['payment_duitku_indodana_api_key']) {
+        $this->error['client_key_v2'] = $this->language->get('error_client_key');
+      }
 
-	if (!$this->request->post['payment_duitku_va_atmbersama_merchant']) {
-		$this->error['server_key_v2'] = $this->language->get('error_server_key');
-	}
+      if (!$this->request->post['payment_duitku_indodana_merchant']) {
+        $this->error['server_key_v2'] = $this->language->get('error_server_key');
+      }        
+      
 
-	if (!$this->request->post['payment_duitku_va_atmbersama_expired'] OR $this->request->post['payment_duitku_va_atmbersama_expired'] > 1440 ) {
-		$this->error['expired_period'] = $this->language->get('error_expired_period');
-	}        
-
-
-	if (!$this->request->post['payment_duitku_va_atmbersama_endpoint']) {
-		$this->error['endpoint'] = $this->language->get('error_endpoint');
-	}        
+     if (!$this->request->post['payment_duitku_indodana_endpoint']) {
+        $this->error['endpoint'] = $this->language->get('error_endpoint');
+      }        
 
     if (!$this->error) {
       return true;

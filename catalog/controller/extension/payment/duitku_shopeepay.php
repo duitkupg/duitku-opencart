@@ -2,7 +2,7 @@
 
 require_once(DIR_SYSTEM . 'library/duitku-php/Duitku.php');
 
-class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
+class ControllerExtensionPaymentDuitkuShopeepay extends Controller {
 
   public function index() {
 
@@ -11,7 +11,7 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
     
     $data['text_loading'] = $this->language->get('text_loading');
 
-    $data['process_order'] = 'extension/payment/duitku_va_permata/process_order';
+    $data['process_order'] = 'extension/payment/duitku_shopeepay/process_order';
 
     if(version_compare(VERSION, '3.0.0.0') < 0) {
       // CODE HERE IF LOWER
@@ -32,10 +32,10 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
    * If it runs successfully, it will redirect to Duitku payment page.
    */
   public function process_order() {    
-    $this->load->model('extension/payment/duitku_va_permata');
+    $this->load->model('extension/payment/duitku_shopeepay');
     $this->load->model('checkout/order');
     //$this->load->model('total/shipping');
-    $this->load->language('extension/payment/duitku_va_permata');
+    $this->load->language('extension/payment/duitku_shopeepay');
 
     $data['errors'] = array();
 
@@ -44,9 +44,9 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
     $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 
     //generate Signature
-    $merchant_code = $this->config->get('payment_duitku_va_permata_merchant');
-    $api_key = $this->config->get('payment_duitku_va_permata_api_key');
-	$expired = $this->config->get('payment_duitku_va_permata_expired') != null ? $this->config->get('payment_duitku_va_permata_expired') : 1440;
+    $merchant_code = $this->config->get('payment_duitku_shopeepay_merchant');
+    $api_key = $this->config->get('payment_duitku_shopeepay_api_key');
+	$expired = $this->config->get('payment_duitku_shopeepay_expired') != null ? $this->config->get('payment_duitku_shopeepay_expired') : 60;
     $order_id = $this->session->data['order_id'];
     $def_curr = $this->config->get('config_currency');
     $order_total = trim($this->currency->format($order_info['total'], 'IDR', '', false));
@@ -121,7 +121,7 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
     $params = array(
           'merchantCode' => $merchant_code, // API Key Merchant /
           'paymentAmount' => intval($order_total), //transform order into integer
-          'paymentMethod' => "BT",
+          'paymentMethod' => "SP",
           'merchantOrderId' => $order_id,
           'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
           'additionalParam' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
@@ -131,8 +131,8 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
 		  'phoneNumber' => $order_info['telephone'],
           'signature' => $signature,
 		  'expiryPeriod' => $expired,       
-          'returnUrl' => $this->url->link('extension/payment/duitku_va_permata/landing_redir'),
-          'callbackUrl' => $this->url->link('extension/payment/duitku_va_permata/payment_notification'),
+          'returnUrl' => $this->url->link('extension/payment/duitku_shopeepay/landing_redir'),
+          'callbackUrl' => $this->url->link('extension/payment/duitku_shopeepay/payment_notification'),
 		  'customerDetail' => $customerDetails,
 		  'itemDetails' => $item_details,
     );        
@@ -140,15 +140,15 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
 	//for va cart is automatically clear before redirection
 	//$this->cart->clear();
 	
-    try {
+    try {  
 
       //Solution IF Error mail function
       //Disable mail function => Dashboard => Extensions => Events => disable 'mail_order_add'
       $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_permata_pending_mapping'), 'Duitku payment pending.');
-      		
+	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_shopeepay_pending_mapping'), 'Duitku payment pending.');
+      			
       $this->log->write("Request : " . json_encode($params) );		
-      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_va_permata_endpoint'), $params);
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_shopeepay_endpoint'), $params);
       $this->response->setOutput($redirUrl);	  
     }
     catch (Exception $e) {
@@ -162,11 +162,11 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
    * Landing page when payment is finished or failure or customer pressed "back" button
    * The Cart is cleared here, so make sure customer reach this page to ensure the cart is emptied when payment succeed
    * payment finish/unfinish/error url :
-   * http://[your shop’s homepage]/index.php?route=payment/duitku_va_permata/payment_notification
+   * http://[your shop’s homepage]/index.php?route=payment/duitku_shopeepay/payment_notification
    */
   public function landing_redir() {    
     $this->load->model('checkout/order');
-    $this->load->model('extension/payment/duitku_va_permata');    
+    $this->load->model('extension/payment/duitku_shopeepay');    
     $redirUrl = $this->url->link('checkout/cart');
 
     if (isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] == '01') {
@@ -177,8 +177,8 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
 	  
 	  $order_id = stripslashes($_GET['merchantOrderId']);
 	  // $this->cart->clear();
-	  // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_permata_pending_mapping'), 'Duitku payment pending.');
-      $redirUrl = $this->url->link('extension/payment/duitku_va_permata/failure');
+	  // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_shopeepay_pending_mapping'), 'Duitku payment pending.');
+      $redirUrl = $this->url->link('payment/duitku_shopeepay/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
@@ -186,8 +186,8 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
 	  
       $order_id = stripslashes($_GET['merchantOrderId']);
 	  $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_permata_failure_mapping'), 'Duitku payment failed.');
-      $redirUrl = $this->url->link('extension/payment/duitku_va_permata/failure');
+	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_shopeepay_failure_mapping'), 'Duitku payment failed.');
+      $redirUrl = $this->url->link('extension/payment/duitku_shopeepay/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['order_id']) && !isset($_GET['resultCode'])){
@@ -202,7 +202,7 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
   * assume there is no failure in bank transfer but waiting for transfer
   */
   public function failure() {
-    $this->load->language('extension/payment/duitku_va_permata');
+    $this->load->language('extension/payment/duitku_shopeepay');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -239,18 +239,18 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
     header("HTTP/1.1 200 OK");
 
     $this->load->model('checkout/order');
-    $this->load->model('extension/payment/duitku_va_permata');
+    $this->load->model('extension/payment/duitku_shopeepay');
 
     if (empty($_REQUEST['resultCode']) || empty($_REQUEST['merchantOrderId']) || empty($_REQUEST['reference'])) {
-          throw new Exception(__('wrong query string please contact admin.', 'duitku_va_permata'));
+          throw new Exception(__('wrong query string please contact admin.', 'duitku_shopeepay'));
     }    
 
     $order_id = stripslashes($_REQUEST['merchantOrderId']);
     $status = stripslashes($_REQUEST['resultCode']);
     $reference = stripslashes($_REQUEST['reference']);
-    $api_key = $this->config->get('payment_duitku_va_permata_api_key');
-    $merchant_code = $this->config->get('payment_duitku_va_permata_merchant');    
-    $endpoint = $this->config->get('payment_duitku_va_permata_endpoint');
+    $api_key = $this->config->get('payment_duitku_shopeepay_api_key');
+    $merchant_code = $this->config->get('payment_duitku_shopeepay_merchant');    
+    $endpoint = $this->config->get('payment_duitku_shopeepay_endpoint');
 
     $order_info = $this->model_checkout_order->getOrder($order_id);
 
@@ -258,9 +258,9 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
     if ($order_info) {
         $this->log->write("perform validation");
         if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key)) {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_permata_success_mapping'), 'Duitku payment successful.');    
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_shopeepay_success_mapping'), 'Duitku payment successful.');    
         } else {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_permata_failure_mapping'), 'Duitku payment failed.');
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_shopeepay_failure_mapping'), 'Duitku payment failed.');
         }     
     }
 
