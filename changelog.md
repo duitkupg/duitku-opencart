@@ -55,7 +55,10 @@
 ----
 - Change Logo Bank Neo Commerce
 
-
 2.12
 ----
 - add channel Atome
+
+2.13
+----
+- add channel Jenius Pay
