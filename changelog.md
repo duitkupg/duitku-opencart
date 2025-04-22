@@ -46,4 +46,9 @@
 2.10
 -----
 - add channel Bank Neo Commerce
-- remove Deprecated channel Mandiri Virtual Account 
+- remove Deprecated Mandiri
+
+2.11
+----
+- add channel Briva
+- add channel QRIS by Nobu
