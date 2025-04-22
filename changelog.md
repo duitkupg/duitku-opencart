@@ -31,3 +31,8 @@
 2.2
 -----
 - add channels to BCA Virtual Account
+
+2.3
+-----
+- Update channel Mandiri Virtual Account become Deprecated
+- add channels to VA Mandiri Direct

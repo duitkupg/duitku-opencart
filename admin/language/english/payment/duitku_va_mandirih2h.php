@@ -1,11 +1,11 @@
 <?php
 // Heading
-$_['heading_title']      = 'Duitku VA MANDIRI (Deprecated)';
+$_['heading_title']      = 'Duitku VA MANDIRI Direct';
 
 // Text
 $_['text_payment']       = 'Payment';
 $_['text_success']       = 'Success: You have modified Duitku account details!';
-$_['text_duitku_va_mandiri'] = '<img src="view/image/payment/duitkumandiri.png" width="60" height = "25" alt="Duitku VA MANDIRI (Deprecated)" title="Duitku" style="border: 1px solid #EEEEEE;" />';
+$_['text_duitku_va_mandirih2h'] = '<img src="view/image/payment/duitkumandiri.png" width="60" height = "25" alt="Duitku VA MANDIRI Direct" title="Duitku" style="border: 1px solid #EEEEEE;" />';
 $_['text_live']          = 'Production';
 $_['text_successful']    = 'Always Successful';
 $_['text_fail']          = 'Always Fail';
@@ -22,9 +22,9 @@ $_['entry_order_status'] = 'Order Status:';
 $_['entry_geo_zone']     = 'Geo Zone:';
 $_['entry_status']       = 'Status:';
 $_['entry_sort_order']   = 'Sort Order:';
-$_['entry_duitku_va_mandiri_success_mapping'] = 'Map Payment Success Status to Order Status:';
-$_['entry_duitku_va_mandiri_pending_mapping'] = 'Map Payment Pending Status to Order Status:';
-$_['entry_duitku_va_mandiri_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
+$_['entry_duitku_va_mandirih2h_success_mapping'] = 'Map Payment Success Status to Order Status:';
+$_['entry_duitku_va_mandirih2h_pending_mapping'] = 'Map Payment Pending Status to Order Status:';
+$_['entry_duitku_va_mandirih2h_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
 $_['entry_display_name'] = 'Display name:';
 
 // Error
