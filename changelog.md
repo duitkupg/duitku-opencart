@@ -63,8 +63,13 @@
 
 2.11.3
 ----
-- Add channel Gudang Voucher QRIS
+- Add channel Jenius Pay 
 
 2.11.4
 ----
-- Add channel Jenius Pay  
+- Add channel Gudang Voucher QRIS 
+
+2.11.5
+----
+- Add channel VA Sahabat Sampoerna
+- Add channel Danamon Virtual Account
