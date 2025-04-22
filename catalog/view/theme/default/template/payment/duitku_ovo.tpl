@@ -12,7 +12,7 @@
   <script>
   $('#button-confirm').on('click', function() {
     $.ajax({
-      url: 'index.php?route=payment/duitku_ovo/process_order',
+      url: 'index.php?route=payment/ovo/process_order',
       cache: false,
       beforeSend: function() {
         $('#button-confirm').button('loading');
@@ -26,5 +26,5 @@
     });
   });
   </script>
-    <!-- v2 Duitku form -->
+    <!-- v2 VT-Web form -->
 <?php endif ?>

@@ -1,17 +1,13 @@
 <?php
 
-class DuitkuCore_Web {
+class Duitku_VtWeb {
 
   public static function getRedirectionUrl($baseUrl, $params)
   {
     //$payloads = array();
     //$payloads = array_replace_recursive($payloads, $params);    
-
-    if ($params['paymentMethod'] == 'MG') {
-        $result = Duitku_ApiRequestor::post($baseUrl . '/api/merchant/creditcard/inquiry',$params);
-    } else {
-        $result = Duitku_ApiRequestor::post($baseUrl . '/api/merchant/v2/inquiry',$params);
-    }
+    
+    $result = Duitku_ApiRequestor::post($baseUrl . '/api/merchant/inquiry',$params);
 
     //var_dump($result);
     //die();

@@ -33,7 +33,6 @@ class ControllerPaymentDuitkuVAPermata extends Controller {
       'text_edit',
       'entry_merchant',
       'entry_api_key',          
-      'entry_expired_period',          
       'entry_test',
       'entry_total',
       'entry_order_status',
@@ -88,7 +87,6 @@ class ControllerPaymentDuitkuVAPermata extends Controller {
       'duitku_va_permata_merchant',
       'duitku_va_permata_environment',
       'duitku_va_permata_api_key',
-      'duitku_va_permata_expired',
       'duitku_va_permata_endpoint',      
       'duitku_va_permata_debug',
       'duitku_va_permata_total',
@@ -150,23 +148,19 @@ class ControllerPaymentDuitkuVAPermata extends Controller {
     }
         
 
-	// check for empty values
-	if (!$this->request->post['duitku_va_permata_api_key']) {
-		$this->error['client_key_v2'] = $this->language->get('error_client_key');
-	}
+      // check for empty values
+      if (!$this->request->post['duitku_va_permata_api_key']) {
+        $this->error['client_key_v2'] = $this->language->get('error_client_key');
+      }
 
-	if (!$this->request->post['duitku_va_permata_merchant']) {
-		$this->error['server_key_v2'] = $this->language->get('error_server_key');
-	}        
+      if (!$this->request->post['duitku_va_permata_merchant']) {
+        $this->error['server_key_v2'] = $this->language->get('error_server_key');
+      }        
+      
 
-	if (!$this->request->post['duitku_va_permata_expired'] OR $this->request->post['duitku_va_permata_expired'] > 1440 ) {
-		$this->error['expired_period'] = $this->language->get('error_expired_period');
-	}        
-
-
-	if (!$this->request->post['duitku_va_permata_endpoint']) {
-		$this->error['endpoint'] = $this->language->get('error_endpoint');
-	}        
+     if (!$this->request->post['duitku_va_permata_endpoint']) {
+        $this->error['endpoint'] = $this->language->get('error_endpoint');
+      }        
 
     if (!$this->error) {
       return true;
