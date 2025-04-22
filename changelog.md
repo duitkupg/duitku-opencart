@@ -51,3 +51,7 @@
 2.11.1
 ----
 - Change Logo Bank Neo Commerce
+
+2.11.2
+----
+- add channel atome
