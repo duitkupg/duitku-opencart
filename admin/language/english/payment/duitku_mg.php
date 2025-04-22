@@ -1,11 +1,11 @@
 <?php
 // Heading
-$_['heading_title']      = 'Duitku Credit Card';
+$_['heading_title']      = 'Duitku Credit Card MIGS';
 
 // Text
 $_['text_payment']       = 'Payment';
 $_['text_success']       = 'Success: You have modified Duitku account details!';
-$_['text_duitku_cc'] = '<img src="view/image/payment/cc.png" width="60" height = "25" alt="Duitku Credit Card" title="Duitku" style="border: 1px solid #EEEEEE;" />';
+$_['text_duitku_mg'] = '<img src="view/image/payment/migs.png" width="60" height = "25" alt="Duitku Credit Card MIGS" title="Duitku" style="border: 1px solid #EEEEEE;" />';
 $_['text_live']          = 'Production';
 $_['text_successful']    = 'Always Successful';
 $_['text_fail']          = 'Always Fail';
@@ -22,8 +22,9 @@ $_['entry_order_status'] = 'Order Status:';
 $_['entry_geo_zone']     = 'Geo Zone:';
 $_['entry_status']       = 'Status:';
 $_['entry_sort_order']   = 'Sort Order:';
-$_['entry_duitku_cc_success_mapping'] = 'Map Payment Success Status to Order Status:';
-$_['entry_duitku_cc_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
+$_['entry_duitku_mg_success_mapping'] = 'Map Payment Success Status to Order Status:';
+$_['entry_duitku_mg_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
+$_['entry_duitku_mg_cred_code'] = 'Credential Code';
 $_['entry_display_name'] = 'Display name:';
 
 // Error
