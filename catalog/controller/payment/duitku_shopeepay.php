@@ -2,7 +2,7 @@
 
 require_once(DIR_SYSTEM . 'library/duitku-php/Duitku.php');
 
-class ControllerPaymentDuitkuVAMaybank extends Controller {
+class ControllerPaymentDuitkuShopeepay extends Controller {
 
   public function index() {
 
@@ -11,7 +11,7 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
     
     $data['text_loading'] = $this->language->get('text_loading');
 
-    $data['process_order'] = 'payment/duitku_va_maybank/process_order';
+    $data['process_order'] = 'payment/duitku_shopeepay/process_order';
 
     if(version_compare(VERSION, '2.2.0.0') < 0) {
       // CODE HERE IF LOWER
@@ -32,10 +32,10 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
    * If it runs successfully, it will redirect to Duitku payment page.
    */
   public function process_order() {    
-    $this->load->model('payment/duitku_va_maybank');
+    $this->load->model('payment/duitku_shopeepay');
     $this->load->model('checkout/order');
     $this->load->model('total/shipping');
-    $this->load->language('payment/duitku_va_maybank');
+    $this->load->language('payment/duitku_shopeepay');
 
     $data['errors'] = array();
 
@@ -44,9 +44,9 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
     $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 
     //generate Signature
-    $merchant_code = $this->config->get('duitku_va_maybank_merchant');
-    $api_key = $this->config->get('duitku_va_maybank_api_key');
-	$expired = $this->config->get('duitku_va_maybank_expired') != null ? $this->config->get('duitku_va_maybank_expired') : 1440;
+    $merchant_code = $this->config->get('duitku_shopeepay_merchant');
+    $api_key = $this->config->get('duitku_shopeepay_api_key');
+    $expired = $this->config->get('duitku_shopeepay_expired') != null ? $this->config->get('duitku_shopeepay_expired') : 60;
     $order_id = $this->session->data['order_id'];
     $def_curr = $this->config->get('config_currency');
     $order_total = $def_curr == 'IDR' ? $order_info['total'] : $this->currency->convert($order_info['total'], $def_curr, 'IDR');
@@ -121,7 +121,7 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
     $params = array(
           'merchantCode' => $merchant_code, // API Key Merchant /
           'paymentAmount' => intval($order_total), //transform order into integer
-          'paymentMethod' => "VA",
+          'paymentMethod' => "SP",
           'merchantOrderId' => $order_id,
           'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
           'additionalParam' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
@@ -131,8 +131,8 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
 		  'phoneNumber' => $order_info['telephone'],
           'signature' => $signature,
 		  'expiryPeriod' => $expired,       
-          'returnUrl' => $this->url->link('payment/duitku_va_maybank/landing_redir'),
-          'callbackUrl' => $this->url->link('payment/duitku_va_maybank/payment_notification'),
+          'returnUrl' => $this->url->link('payment/duitku_shopeepay/landing_redir'),
+          'callbackUrl' => $this->url->link('payment/duitku_shopeepay/payment_notification'),
 		  'customerDetail' => $customerDetails,
 		  'itemDetails' => $item_details,
     );        
@@ -143,7 +143,7 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
     try {
       $this->log->write("Request : " . json_encode($params) );
 	       	  
-      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('duitku_va_maybank_endpoint'), $params);
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('duitku_shopeepay_endpoint'), $params);
       $this->response->setOutput($redirUrl);	  
     }
     catch (Exception $e) {
@@ -157,11 +157,11 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
    * Landing page when payment is finished or failure or customer pressed "back" button
    * The Cart is cleared here, so make sure customer reach this page to ensure the cart is emptied when payment succeed
    * payment finish/unfinish/error url :
-   * http://[your shop’s homepage]/index.php?route=payment/duitku_va_maybank/payment_notification
+   * http://[your shop’s homepage]/index.php?route=payment/duitku_shopeepay/payment_notification
    */
   public function landing_redir() {    
     $this->load->model('checkout/order');
-    $this->load->model('payment/duitku_va_maybank');    
+    $this->load->model('payment/duitku_shopeepay');    
     $redirUrl = $this->url->link('checkout/cart');
 
     if (isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] == '01') {
@@ -172,8 +172,8 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
 	  
 	  $order_id = stripslashes($_GET['merchantOrderId']);
 	  $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('duitku_va_maybank_pending_mapping'), 'Duitku payment pending.');
-      $redirUrl = $this->url->link('payment/duitku_va_maybank/failure');
+	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('duitku_shopeepay_pending_mapping'), 'Duitku payment pending.');
+      $redirUrl = $this->url->link('payment/duitku_shopeepay/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
@@ -181,8 +181,8 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
 	  
       $order_id = stripslashes($_GET['merchantOrderId']);
 	  $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('duitku_va_maybank_failure_mapping'), 'Duitku payment failed.');
-      $redirUrl = $this->url->link('payment/duitku_va_maybank/failure');
+	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('duitku_shopeepay_failure_mapping'), 'Duitku payment failed.');
+      $redirUrl = $this->url->link('payment/duitku_shopeepay/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['order_id']) && !isset($_GET['resultCode'])){
@@ -197,7 +197,7 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
   * assume there is no failure in bank transfer but waiting for transfer
   */
   public function failure() {
-    $this->load->language('payment/duitku_va_maybank');
+    $this->load->language('payment/duitku_shopeepay');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -234,18 +234,18 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
     header("HTTP/1.1 200 OK");
 
     $this->load->model('checkout/order');
-    $this->load->model('payment/duitku_va_maybank');
+    $this->load->model('payment/duitku_shopeepay');
 
     if (empty($_REQUEST['resultCode']) || empty($_REQUEST['merchantOrderId']) || empty($_REQUEST['reference'])) {
-          throw new Exception(__('wrong query string please contact admin.', 'duitku_va_maybank'));
+          throw new Exception(__('wrong query string please contact admin.', 'duitku_shopeepay'));
     }    
 
     $order_id = stripslashes($_REQUEST['merchantOrderId']);
     $status = stripslashes($_REQUEST['resultCode']);
     $reference = stripslashes($_REQUEST['reference']);
-    $api_key = $this->config->get('duitku_va_maybank_api_key');
-    $merchant_code = $this->config->get('duitku_va_maybank_merchant');    
-    $endpoint = $this->config->get('duitku_va_maybank_endpoint');
+    $api_key = $this->config->get('duitku_shopeepay_api_key');
+    $merchant_code = $this->config->get('duitku_shopeepay_merchant');    
+    $endpoint = $this->config->get('duitku_shopeepay_endpoint');
 
     $order_info = $this->model_checkout_order->getOrder($order_id);
 
@@ -253,9 +253,9 @@ class ControllerPaymentDuitkuVAMaybank extends Controller {
     if ($order_info) {
         $this->log->write("perform validation");
         if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key)) {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('duitku_va_maybank_success_mapping'), 'Duitku payment successful.');    
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('duitku_shopeepay_success_mapping'), 'Duitku payment successful.');    
         } else {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('duitku_va_maybank_failure_mapping'), 'Duitku payment failed.');
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('duitku_shopeepay_failure_mapping'), 'Duitku payment failed.');
         }     
     }
 

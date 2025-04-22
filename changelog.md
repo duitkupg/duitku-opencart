@@ -18,3 +18,12 @@
 - compatible with opencart 2.0.2 above
 - add more channels to Mandiri Virtual Account
 
+2.0
+-----
+- Upgrade Duitku API V2
+- add channels to ShopeePay
+- add channels to Indodana
+
+2.1
+-----
+- Improve parameter Duitku Expiry Period
