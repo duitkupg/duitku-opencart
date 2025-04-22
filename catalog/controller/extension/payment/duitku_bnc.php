@@ -2,7 +2,7 @@
 
 require_once(DIR_SYSTEM . 'library/duitku-php/Duitku.php');
 
-class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
+class ControllerExtensionPaymentDuitkuBnc extends Controller {
 
   public function index() {
 
@@ -11,7 +11,7 @@ class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
     
     $data['text_loading'] = $this->language->get('text_loading');
 
-    $data['process_order'] = 'extension/payment/duitku_va_mandiri/process_order';
+    $data['process_order'] = 'extension/payment/duitku_bnc/process_order';
 
     if(version_compare(VERSION, '3.0.0.0') < 0) {
       // CODE HERE IF LOWER
@@ -32,10 +32,10 @@ class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
    * If it runs successfully, it will redirect to Duitku payment page.
    */
   public function process_order() {    
-    $this->load->model('extension/payment/duitku_va_mandiri');
+    $this->load->model('extension/payment/duitku_bnc');
     $this->load->model('checkout/order');
     //$this->load->model('total/shipping');
-    $this->load->language('extension/payment/duitku_va_mandiri');
+    $this->load->language('extension/payment/duitku_bnc');
 
     $data['errors'] = array();
 
@@ -44,111 +44,111 @@ class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
     $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 
     //generate Signature
-    $merchant_code = $this->config->get('payment_duitku_va_mandiri_merchant');
-    $api_key = $this->config->get('payment_duitku_va_mandiri_api_key');
-	$expired = $this->config->get('payment_duitku_va_mandiri_expired') != null ? $this->config->get('payment_duitku_va_mandiri_expired') : 1440;
+    $merchant_code = $this->config->get('payment_duitku_bnc_merchant');
+    $api_key = $this->config->get('payment_duitku_bnc_api_key');
+	  $expired = $this->config->get('payment_duitku_bnc_expired') != null ? $this->config->get('payment_duitku_bnc_expired') : 1440;
     $order_id = $this->session->data['order_id'];
     $def_curr = $this->config->get('config_currency');
     $order_total = trim($this->currency->format($order_info['total'], 'IDR', '', false));
     
-	//itemDetails
-	$products = $this->cart->getProducts();
-	  
-	$item_details = array();
+    //itemDetails
+    $products = $this->cart->getProducts();
+      
+    $item_details = array();
 
-    foreach ($products as $product) {
-      $item = array(
-        'price'    => (int)$product['price']*(int)$product['quantity'],
-        'quantity' => (int)$product['quantity'],
-        'name'     => substr($product['name'], 0, 49)
-      );
-      $item_details[] = $item;
+      foreach ($products as $product) {
+        $item = array(
+          'price'    => (int)$product['price']*(int)$product['quantity'],
+          'quantity' => (int)$product['quantity'],
+          'name'     => substr($product['name'], 0, 49)
+        );
+        $item_details[] = $item;
+      }
+
+      if ($this->cart->hasShipping()) {
+        $shipping_data = $this->session->data['shipping_method'];
+        if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+          $shipping_data['cost'] = $this->tax->calculate(
+            $shipping_data['cost'],
+            $shipping_data['tax_class_id'],
+            $this->config->get('config_tax'));
+          }
+
+          $shipping_item = array(
+            'price' => (int)$shipping_data['cost'],
+            'quantity' => 1,
+            'name' => 'Shipping Fee'
+          );
+          $item_details[] = $shipping_item;
     }
 
-    if ($this->cart->hasShipping()) {
-      $shipping_data = $this->session->data['shipping_method'];
-      if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-        $shipping_data['cost'] = $this->tax->calculate(
-          $shipping_data['cost'],
-          $shipping_data['tax_class_id'],
-          $this->config->get('config_tax'));
-        }
+    $amount_price = 0;
+    foreach ($item_details as $item) {
+      $amount_price += $item['price'];
+    }
 
-        $shipping_item = array(
-          'price' => (int)$shipping_data['cost'],
-          'quantity' => 1,
-          'name' => 'Shipping Fee'
+    if ($amount_price != $order_total) {
+      $coupon_item = array(
+        'price'    => (int)$order_total - (int)$amount_price,
+        'quantity' => 1,
+        'name'     => 'Coupon'
         );
-        $item_details[] = $shipping_item;
-	}
-
-	$amount_price = 0;
-	foreach ($item_details as $item) {
-		$amount_price += $item['price'];
-	}
-
-	if ($amount_price != $order_total) {
-		$coupon_item = array(
-			'price'    => (int)$order_total - (int)$amount_price,
-			'quantity' => 1,
-			'name'     => 'Coupon'
-		  );
-		$item_details[] = $coupon_item;
-	}
-	
-	$billing_address = array(
-	  'firstName' => $order_info['payment_firstname'],
-	  'lastName' => $order_info['payment_lastname'],
-	  'address' => $order_info['payment_address_1'],
-	  'city' => $order_info['payment_city'],
-	  'postalCode' => $order_info['payment_postcode'],
-	  'phone' => $order_info['telephone'],
-	  'countryCode' => "ID"
-	);
-	
-	$customerDetails = array(
-		'firstName' => $order_info['payment_firstname'],
-		'lastName' => $order_info['payment_lastname'],
-		'email' => $order_info['email'],
-		'phoneNumber' => $order_info['telephone'],
-		'billingAddress' => $billing_address,
-		'shippingAddress' => $billing_address
-	);
-	
-	$signature = md5($merchant_code . $order_id . intval($order_total) . $api_key);    
+      $item_details[] = $coupon_item;
+    }
+    
+    $billing_address = array(
+      'firstName' => $order_info['payment_firstname'],
+      'lastName' => $order_info['payment_lastname'],
+      'address' => $order_info['payment_address_1'],
+      'city' => $order_info['payment_city'],
+      'postalCode' => $order_info['payment_postcode'],
+      'phone' => $order_info['telephone'],
+      'countryCode' => "ID"
+    );
+    
+    $customerDetails = array(
+      'firstName' => $order_info['payment_firstname'],
+      'lastName' => $order_info['payment_lastname'],
+      'email' => $order_info['email'],
+      'phoneNumber' => $order_info['telephone'],
+      'billingAddress' => $billing_address,
+      'shippingAddress' => $billing_address
+    );
+    
+    $signature = md5($merchant_code . $order_id . intval($order_total) . $api_key);    
 
     // Prepare Parameters
     $params = array(
           'merchantCode' => $merchant_code, // API Key Merchant /
           'paymentAmount' => intval($order_total), //transform order into integer
-          'paymentMethod' => "M1",
+          'paymentMethod' => "NC",
           'merchantOrderId' => $order_id,
           'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
           'additionalParam' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
           'merchantUserInfo' => $order_info['email'],
-		  'customerVaName' => $order_info['email'],
-		  'email' => $order_info['email'],
-		  'phoneNumber' => $order_info['telephone'],
+          'customerVaName' => $order_info['email'],
+          'email' => $order_info['email'],
+          'phoneNumber' => $order_info['telephone'],
           'signature' => $signature,
-		  'expiryPeriod' => $expired,       
-          'returnUrl' => $this->url->link('extension/payment/duitku_va_mandiri/landing_redir'),
-          'callbackUrl' => $this->url->link('extension/payment/duitku_va_mandiri/payment_notification'),
-		  'customerDetail' => $customerDetails,
-		  'itemDetails' => $item_details,
-    );       
+          'expiryPeriod' => $expired,       
+          'returnUrl' => $this->url->link('extension/payment/duitku_bnc/landing_redir'),
+          'callbackUrl' => $this->url->link('extension/payment/duitku_bnc/payment_notification'),
+          'customerDetail' => $customerDetails,
+          'itemDetails' => $item_details
+    );         
 
-	//for va cart is automatically clear before redirection
-	//$this->cart->clear();
+    //for va cart is automatically clear before redirection
+    //$this->cart->clear();
 	
-    try {
-
+    try {  
+	
       //Solution IF Error mail function
       //Disable mail function => Dashboard => Extensions => Events => disable 'mail_order_add'
       $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_mandiri_pending_mapping'), 'Duitku payment pending.');
-      				
+	    $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_bnc_pending_mapping'), 'Duitku payment pending.');
+      
       $this->log->write("Request : " . json_encode($params) );		
-      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_va_mandiri_endpoint'), $params);
+	    $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_bnc_endpoint'), $params);
       $this->response->setOutput($redirUrl);	  
     }
     catch (Exception $e) {
@@ -162,11 +162,11 @@ class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
    * Landing page when payment is finished or failure or customer pressed "back" button
    * The Cart is cleared here, so make sure customer reach this page to ensure the cart is emptied when payment succeed
    * payment finish/unfinish/error url :
-   * http://[your shop’s homepage]/index.php?route=payment/duitku_va_mandiri/payment_notification
+   * http://[your shop’s homepage]/index.php?route=payment/duitku_bnc/payment_notification
    */
   public function landing_redir() {    
     $this->load->model('checkout/order');
-    $this->load->model('extension/payment/duitku_va_mandiri');    
+    $this->load->model('extension/payment/duitku_bnc');    
     $redirUrl = $this->url->link('checkout/cart');
 
     if (isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] == '01') {
@@ -177,8 +177,8 @@ class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
 	  
 	  $order_id = stripslashes($_GET['merchantOrderId']);
 	  // $this->cart->clear();
-	  // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_mandiri_pending_mapping'), 'Duitku payment pending.');
-      $redirUrl = $this->url->link('payment/duitku_va_mandiri/failure');
+	  // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_bnc_pending_mapping'), 'Duitku payment pending.');
+      $redirUrl = $this->url->link('extension/payment/duitku_bnc/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
@@ -186,8 +186,8 @@ class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
 	  
       $order_id = stripslashes($_GET['merchantOrderId']);
 	  $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_mandiri_failure_mapping'), 'Duitku payment failed.');
-      $redirUrl = $this->url->link('extension/payment/duitku_va_mandiri/failure');
+	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_bnc_failure_mapping'), 'Duitku payment failed.');
+      $redirUrl = $this->url->link('extension/payment/duitku_bnc/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['order_id']) && !isset($_GET['resultCode'])){
@@ -202,7 +202,7 @@ class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
   * assume there is no failure in bank transfer but waiting for transfer
   */
   public function failure() {
-    $this->load->language('extension/payment/duitku_va_mandiri');
+    $this->load->language('extension/payment/duitku_bnc');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -239,18 +239,18 @@ class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
     header("HTTP/1.1 200 OK");
 
     $this->load->model('checkout/order');
-    $this->load->model('extension/payment/duitku_va_mandiri');
+    $this->load->model('extension/payment/duitku_bnc');
 
     if (empty($_REQUEST['resultCode']) || empty($_REQUEST['merchantOrderId']) || empty($_REQUEST['reference'])) {
-          throw new Exception(__('wrong query string please contact admin.', 'duitku_va_mandiri'));
+          throw new Exception(__('wrong query string please contact admin.', 'duitku_bnc'));
     }    
 
     $order_id = stripslashes($_REQUEST['merchantOrderId']);
     $status = stripslashes($_REQUEST['resultCode']);
     $reference = stripslashes($_REQUEST['reference']);
-    $api_key = $this->config->get('payment_duitku_va_mandiri_api_key');
-    $merchant_code = $this->config->get('payment_duitku_va_mandiri_merchant');    
-    $endpoint = $this->config->get('payment_duitku_va_mandiri_endpoint');
+    $api_key = $this->config->get('payment_duitku_bnc_api_key');
+    $merchant_code = $this->config->get('payment_duitku_bnc_merchant');    
+    $endpoint = $this->config->get('payment_duitku_bnc_endpoint');
 
     $order_info = $this->model_checkout_order->getOrder($order_id);
 
@@ -258,9 +258,9 @@ class ControllerExtensionPaymentDuitkuVAMandiri extends Controller {
     if ($order_info) {
         $this->log->write("perform validation");
         if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key)) {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_mandiri_success_mapping'), 'Duitku payment successful.');    
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_bnc_success_mapping'), 'Duitku payment successful.');    
         } else {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_mandiri_failure_mapping'), 'Duitku payment failed.');
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_bnc_failure_mapping'), 'Duitku payment failed.');
         }     
     }
 

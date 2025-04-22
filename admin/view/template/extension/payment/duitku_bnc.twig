@@ -24,14 +24,13 @@
         <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
       </div>
       <div class="panel-body">
-        <h4 class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i>This Payment Method will be removed in future release</h4>
         <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-payment" class="form-horizontal">
           
 		  <div class="form-group">
             <label class="col-sm-2 control-label" for="input-mode">{{ entry_status }}</label>
             <div class="col-sm-10">
-			<select name="payment_duitku_va_mandiri_status" id="input-mode" class="form-control">
-                {% if payment_duitku_va_mandiri_status %}
+			<select name="payment_duitku_bnc_status" id="input-mode" class="form-control">
+                {% if payment_duitku_bnc_status %}
                 <option value="1" selected="selected">{{ text_enabled }}</option>
                 <option value="0">{{ text_disabled }}</option>
                 {% else %}
@@ -46,7 +45,7 @@
 		  <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-merchant-id">{{ entry_display_name }}</label>
             <div class="col-sm-10">
-              <input type="text" name="payment_duitku_va_mandiri_display_name" value="{{ payment_duitku_va_mandiri_display_name }}" placeholder="{{ entry_display_name }}" id="input-merchant-id" class="form-control" />
+              <input type="text" name="payment_duitku_bnc_display_name" value="{{ payment_duitku_bnc_display_name }}" placeholder="{{ entry_display_name }}" id="input-merchant-id" class="form-control" />
               {% if error.display_name %}
               <div class="text-danger">{{ error.display_name }}</div>
               {% endif %}
@@ -56,7 +55,7 @@
 		  <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-merchant-endpoint">{{ entry_endpoint }}</label>
             <div class="col-sm-10">
-              <input type="text" name="payment_duitku_va_mandiri_endpoint" value="{{ payment_duitku_va_mandiri_endpoint }}" placeholder="{{ entry_endpoint }}" id="input-merchant-endpoint" class="form-control" />
+              <input type="text" name="payment_duitku_bnc_endpoint" value="{{ payment_duitku_bnc_endpoint }}" placeholder="{{ entry_endpoint }}" id="input-merchant-endpoint" class="form-control" />
               {% if error.endpoint %}
               <div class="text-danger">{{ error.endpoint }}</div>
               {% endif %}
@@ -66,7 +65,7 @@
 		  <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-merchant">{{ entry_merchant }}</label>
             <div class="col-sm-10">
-              <input type="text" name="payment_duitku_va_mandiri_merchant" value="{{ payment_duitku_va_mandiri_merchant }}" placeholder="{{ entry_merchant }}" id="input-merchant" class="form-control" />
+              <input type="text" name="payment_duitku_bnc_merchant" value="{{ payment_duitku_bnc_merchant }}" placeholder="{{ entry_merchant }}" id="input-merchant" class="form-control" />
               {% if error.server_key_v2 %}
               <div class="text-danger">{{ error.server_key_v2 }}</div>
               {% endif %}
@@ -75,9 +74,9 @@
 		  
 		  
           <div class="form-group required">
-            <label class="col-sm-2 control-label" for="payment_duitku_va_mandiri_api_key">{{ entry_api_key }}</label>
+            <label class="col-sm-2 control-label" for="payment_duitku_bnc_api_key">{{ entry_api_key }}</label>
             <div class="col-sm-10">
-              <input type="text" name="payment_duitku_va_mandiri_api_key" value="{{ payment_duitku_va_mandiri_api_key }}" placeholder="{{ entry_api_key }}" id="payment_duitku_va_mandiri_api_key" class="form-control" />
+              <input type="text" name="payment_duitku_bnc_api_key" value="{{ payment_duitku_bnc_api_key }}" placeholder="{{ entry_api_key }}" id="payment_duitku_bnc_api_key" class="form-control" />
               {% if error.client_key_v2 %}
               <div class="text-danger">{{ error.client_key_v2 }}</div>
               {% endif %}
@@ -85,9 +84,9 @@
           </div>
 		  
 		<div class="form-group required">
-			<label class="col-sm-2 control-label" for="payment_duitku_va_mandiri_expired">{{ entry_expired_period }}</label>
+			<label class="col-sm-2 control-label" for="payment_duitku_bnc_expired">{{ entry_expired_period }}</label>
 			<div class="col-sm-10">
-			  <input type="text" name="payment_duitku_va_mandiri_expired" value="{{ payment_duitku_va_mandiri_expired }}" placeholder="{{ entry_expired_period }}" id="payment_duitku_va_mandiri_expired" class="form-control" />
+			  <input type="text" name="payment_duitku_bnc_expired" value="{{ payment_duitku_bnc_expired }}" placeholder="{{ entry_expired_period }}" id="payment_duitku_bnc_expired" class="form-control" />
 			
               {% if error.expired_period %}
 				<div class="text-danger">{{ error.expired_period }}</div>
@@ -116,10 +115,10 @@
 		   <div class="form-group">
             <label class="col-sm-2 control-label" for="input-geo-zone">{{ entry_geo_zone }}</label>
             <div class="col-sm-10">
-              <select name="payment_duitku_va_mandiri_geo_zone_id" id="input-geo-zone" class="form-control">
+              <select name="payment_duitku_bnc_geo_zone_id" id="input-geo-zone" class="form-control">
                 <option value="0">{{ text_all_zones }}</option>
                 {% for geo_zone in geo_zones %}
-                {% if geo_zone.geo_zone_id == payment_duitku_va_mandiri_geo_zone_id %}
+                {% if geo_zone.geo_zone_id == payment_duitku_bnc_geo_zone_id %}
                 <option value="{{ geo_zone.geo_zone_id }}" selected="selected">{{ geo_zone.name }}</option>
                 {% else %}
                 <option value="{{ geo_zone.geo_zone_id }}">{{ geo_zone.name }}</option>
@@ -130,13 +129,13 @@
           </div>
 		  
 		  <div class="form-group required">
-            <label class="col-sm-2 control-label" for="payment_duitku_va_mandiri_sort_order">{{ entry_sort_order }}</label>
+            <label class="col-sm-2 control-label" for="payment_duitku_bnc_sort_order">{{ entry_sort_order }}</label>
             <div class="col-sm-10">
-              <input type="text" name="payment_duitku_va_mandiri_sort_order" value="{{ payment_duitku_va_mandiri_sort_order }}" placeholder="{{ entry_sort_order }}" id="payment_duitku_va_mandiri_sort_order" class="form-control" />
+              <input type="text" name="payment_duitku_bnc_sort_order" value="{{ payment_duitku_bnc_sort_order }}" placeholder="{{ entry_sort_order }}" id="payment_duitku_bnc_sort_order" class="form-control" />
             </div>
           </div>
 		<div>
-			<center><font size="1">version 2.3 - This payment method will be removed in future release</font></center>
+			<center><font size="1">version 2.3</font></center>
 		</div>
 		  
         </form>
