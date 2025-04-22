@@ -38,3 +38,7 @@
 -----
 - Update channel Dana
 - Update channel LinkAja Fixed and Percentage
+
+2.9
+-----
+- add channel PosPay
