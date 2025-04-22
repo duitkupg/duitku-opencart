@@ -50,3 +50,7 @@
 ----
 - add channel Briva
 - add channel QRIS by Nobu
+
+2.11.1
+----
+- Change Logo Bank Neo Commerce
