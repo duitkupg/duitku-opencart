@@ -56,9 +56,9 @@
 							<div class="col-sm-3">
 							  <input type="text" name="duitku_va_permata_display_name" value="<?php echo $duitku_va_permata_display_name; ?>" id="input-merchant-id" class="form-control" />
 							</div>
-							<div class="col-sm-7">
+							<div class="col-sm-3">
 								<?php if (isset($error['display_name'])) { ?>
-								<div class="col-sm-12"> <?php echo $error['display_name']; ?> </div>
+								<div class="col-sm-3"> <?php echo $error['display_name']; ?> </div>
 								<?php } ?>
 							</div>
 						</div>
@@ -70,9 +70,9 @@
 							<div class="col-sm-3">
 							  <input type="text" name="duitku_va_permata_endpoint" value="<?php echo $duitku_va_permata_endpoint; ?>" id="input-merchant-id" class="form-control" />
 							</div>
-							<div class="col-sm-7">
+							<div class="col-sm-3">
 								<?php if (isset($error['endpoint'])) { ?>
-								<div class="col-sm-12"> <?php echo $error['endpoint']; ?> </div>
+								<div class="col-sm-3"> <?php echo $error['endpoint']; ?> </div>
 								<?php } ?>
 							</div>
 						</div>
@@ -90,9 +90,9 @@
 									<?php endforeach ?>
 								</select>
 							</div>
-							<div class="col-sm-7">
+							<div class="col-sm-3">
 								<?php if (isset($error['environment'])) { ?>
-								<div class="col-sm-12"> <?php echo $error['environment']; ?> </div>
+								<div class="col-sm-3"> <?php echo $error['environment']; ?> </div>
 								<?php } ?>
 							</div>
 						</div> -->
@@ -103,9 +103,9 @@
 							<div class="col-sm-3">
 							  <input type="text" name="duitku_va_permata_merchant" value="<?php echo $duitku_va_permata_merchant; ?>" id="input-merchant-id" class="form-control" />
 							</div>
-							<div class="col-sm-7">
+							<div class="col-sm-3">
 								<?php if (isset($error['server_key_v2'])) { ?>
-								<div class="col-sm-12"> <?php echo $error['server_key_v2']; ?> </div>
+								<div class="col-sm-3"> <?php echo $error['server_key_v2']; ?> </div>
 								<?php } ?>
 							</div>
 						</div>
@@ -116,26 +116,13 @@
 							<div class="col-sm-3">
 							  <input type="text" name="duitku_va_permata_api_key" value="<?php echo $duitku_va_permata_api_key; ?>" id="input-merchant-id" class="form-control" />
 							</div>
-							<div class="col-sm-7">
+							<div class="col-sm-3">
 								<?php if (isset($error['client_key_v2'])) { ?>
-								<div class="col-sm-12"> <?php echo $error['client_key_v2']; ?> </div>
+								<div class="col-sm-3"> <?php echo $error['client_key_v2']; ?> </div>
 								<?php } ?>
 							</div>
 						</div>
 						<!-- Client Key (v2-specific) -->
-						
-						<div class="form-group required v2_settings sensitive">
-							<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_expired_period; ?></label>
-							<div class="col-sm-3">
-							  <input type="number" name="duitku_va_permata_expired" value="<?php echo $duitku_va_permata_expired; ?>" id="input-merchant-id" class="form-control" />
-							</div>
-							<div class="col-sm-7">
-								<?php if (isset($error['expired_period'])) { ?>
-								<div class="col-sm-12"> <?php echo $error['expired_period']; ?> </div>
-								<?php } ?>
-							</div>
-						</div>
-						<!-- Expired (v2-specific) -->
 		
 
 					<?php foreach (array('duitku_va_permata_success_mapping', 'duitku_va_permata_pending_mapping', 'duitku_va_permata_failure_mapping') as $status): ?>
@@ -150,9 +137,9 @@
 							</div>
 						</div>
 					<?php endforeach ?>
-					<!-- Duitku Mapping -->
+					<!-- VTWeb Mapping -->
 			
-					<div class="form-group">
+					<div class="form-group v2_vtweb_settings">
 						<label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_geo_zone; ?></label>
 							<div class="col-sm-3">
 								<select name="duitku_va_permata_geo_zone_id"  class="form-control">
@@ -176,7 +163,7 @@
 							</div>
 						</div>
 						<div>
-							<center><font size="1">version 2.3</font></center>
+							<center><font size="1">version 1.0</font></center>
 						</div>
 
 				  </form>
