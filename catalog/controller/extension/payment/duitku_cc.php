@@ -136,10 +136,13 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
 		  'itemDetails' => $item_details,
     );        
 
-    try {
-      $this->log->write("Request : " . json_encode($params) );		
-      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_cc_endpoint'), $params);
-      $this->response->setOutput($redirUrl);
+    try {	
+      $result = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_cc_endpoint'), $params);
+      $this->log->write("URL : " . $result->paymentUrl);
+      $this->log->write("Request : " . json_encode($params, JSON_PRETTY_PRINT));
+
+      $this->log->write("Response : " . json_encode($result, JSON_PRETTY_PRINT));
+      $this->response->setOutput($result->paymentUrl);
     }
     catch (Exception $e) {
       $data['errors'][] = $e->getMessage();
@@ -156,12 +159,12 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
    */
   public function landing_redir() {    
         
-    $redirUrl = $this->url->link('checkout/cart');
+    $redirUrl = $this->url->link('checkout/success');
 
     if (isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] == '00') {
       //if capture or pending or challenge or settlement, redirect to order received page
       $this->cart->clear();
-      $redirUrl = $this->url->link('checkout/success&');
+      $redirUrl = $this->url->link('checkout/success');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
@@ -232,11 +235,28 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
     $merchant_code = $this->config->get('payment_duitku_cc_merchant');    
     $endpoint = $this->config->get('payment_duitku_cc_endpoint');
 
+    $signatureCheck = md5($merchant_code . intval($_REQUEST['amount']) . $_REQUEST['merchantOrderId'] . $api_key);
+
+    $order_info = $this->model_checkout_order->getOrder($order_id);
+    $current_status_id = $order_info['order_status_id'];
+
+    if ($current_status_id == $this->config->get('payment_duitku_cc_success_mapping')){
+      header("HTTP/1.1 200");
+      echo "Order Already Completed";
+      die;
+    }
+
+    if ($_REQUEST['signature'] != $signatureCheck){
+      header("HTTP/1.1 500 Internal Server Error");
+      echo "Wrong Signature";
+      die;
+    }
+
     $order_info = $this->model_checkout_order->getOrder($order_id);
 
     //check if order id is in the database
     if ($order_info) {
-        $this->log->write("perform validation");
+        $this->log->write("Callback Recieved : " . json_encode($_REQUEST, JSON_PRETTY_PRINT));
         if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key)) {
             $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_cc_success_mapping'), 'Duitku payment successful.');    
         } else {

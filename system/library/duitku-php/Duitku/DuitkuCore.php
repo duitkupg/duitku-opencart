@@ -14,7 +14,7 @@ class DuitkuCore_Web {
 
     // var_dump($result);
     // die();
-    return $result->paymentUrl;
+    return $result;
   }
   
   public static function validateTransaction($baseUrl, $merchantCode, $order_id, $reference, $apikey)
