@@ -121,7 +121,7 @@ class ControllerExtensionPaymentDuitkuVASampoerna extends Controller {
     $params = array(
           'merchantCode' => $merchant_code, // API Key Merchant /
           'paymentAmount' => intval($order_total), //transform order into integer
-          'paymentMethod' => "BV",
+          'paymentMethod' => "S1",
           'merchantOrderId' => $order_id,
           'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
           'additionalParam' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
@@ -147,12 +147,9 @@ class ControllerExtensionPaymentDuitkuVASampoerna extends Controller {
       $this->cart->clear();
 	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_sampoerna_pending_mapping'), 'Duitku payment pending.');
       		
-      $result = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_va_sampoerna_endpoint'), $params);
-      $this->log->write("URL : " . $result->paymentUrl);
-      $this->log->write("Request : " . json_encode($params, JSON_PRETTY_PRINT));
-
-      $this->log->write("Response : " . json_encode($result, JSON_PRETTY_PRINT));
-      $this->response->setOutput($result->paymentUrl);  
+      $this->log->write("Request : " . json_encode($params, JSON_PRETTY_PRINT) );		
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_va_sampoerna_endpoint'), $params,  $this->log);
+      $this->response->setOutput($redirUrl); 
     }
     catch (Exception $e) {
       $data['errors'][] = $e->getMessage();

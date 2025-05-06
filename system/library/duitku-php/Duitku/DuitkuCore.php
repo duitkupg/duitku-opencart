@@ -2,19 +2,26 @@
 
 class DuitkuCore_Web {
 
-  public static function getRedirectionUrl($baseUrl, $params)
+  public static function getRedirectionUrl($baseUrl, $params, $log)
   {
+    
+    
+
     //$payloads = array();
     //$payloads = array_replace_recursive($payloads, $params);    
     if ($params['paymentMethod'] == 'MG') {
+        $log->write("URL : " . $baseUrl . '/api/merchant/creditcard/inquiry');
         $result = Duitku_ApiRequestor::post($baseUrl . '/api/merchant/creditcard/inquiry',$params);
     } else {
+        $log->write("URL : " . $baseUrl . '/api/merchant/v2/inquiry');
         $result = Duitku_ApiRequestor::post($baseUrl . '/api/merchant/v2/inquiry',$params);
     }
 
+    $log->write("Response : " . json_encode($result, JSON_PRETTY_PRINT));
+
     // var_dump($result);
     // die();
-    return $result;
+    return $result->paymentUrl;
   }
   
   public static function validateTransaction($baseUrl, $merchantCode, $order_id, $reference, $apikey)

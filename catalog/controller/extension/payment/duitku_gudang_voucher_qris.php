@@ -147,12 +147,9 @@ class ControllerExtensionPaymentDuitkuGudangVoucherQris extends Controller {
       $this->cart->clear();
 	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_gudang_voucher_qris_pending_mapping'), 'Duitku payment pending.');
 	
-      $result = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_gudang_voucher_qris_endpoint'), $params);
-      $this->log->write("URL : " . $result->paymentUrl);
-      $this->log->write("Request : " . json_encode($params, JSON_PRETTY_PRINT));
-
-      $this->log->write("Response : " . json_encode($result, JSON_PRETTY_PRINT));
-      $this->response->setOutput($result->paymentUrl);
+      $this->log->write("Request : " . json_encode($params, JSON_PRETTY_PRINT) );		
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_gudang_voucher_qris_endpoint'), $params,  $this->log);
+      $this->response->setOutput($redirUrl);
     }
     catch (Exception $e) {
       $data['errors'][] = $e->getMessage();
