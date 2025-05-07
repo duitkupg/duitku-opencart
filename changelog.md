@@ -77,3 +77,10 @@
 2.11.6
 ----
 - Add channel VA Bank Syariah Indonesia
+
+2.11.7
+----
+- Add channel Nusapay QRIS
+- Add Signature and Order Status Check on Callback
+- Update Logging
+- Update returnUrl when payment success

@@ -2,7 +2,7 @@
 
 require_once(DIR_SYSTEM . 'library/duitku-php/Duitku.php');
 
-class ControllerExtensionPaymentDuitkuDana extends Controller {
+class ControllerExtensionPaymentDuitkuNusapayQris extends Controller {
 
   public function index() {
 
@@ -11,7 +11,7 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
     
     $data['text_loading'] = $this->language->get('text_loading');
 
-    $data['process_order'] = 'extension/payment/duitku_dana/process_order';
+    $data['process_order'] = 'extension/payment/duitku_nusapay_qris/process_order';
 
     if(version_compare(VERSION, '3.0.0.0') < 0) {
       // CODE HERE IF LOWER
@@ -32,10 +32,10 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
    * If it runs successfully, it will redirect to Duitku payment page.
    */
   public function process_order() {    
-    $this->load->model('extension/payment/duitku_dana');
+    $this->load->model('extension/payment/duitku_nusapay_qris');
     $this->load->model('checkout/order');
     //$this->load->model('total/shipping');
-    $this->load->language('extension/payment/duitku_dana');
+    $this->load->language('extension/payment/duitku_nusapay_qris');
 
     $data['errors'] = array();
 
@@ -44,9 +44,9 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
     $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 
     //generate Signature
-    $merchant_code = $this->config->get('payment_duitku_dana_merchant');
-    $api_key = $this->config->get('payment_duitku_dana_api_key');
-	$expired = $this->config->get('payment_duitku_dana_expired') != null ? $this->config->get('payment_duitku_dana_expired') : 60;
+    $merchant_code = $this->config->get('payment_duitku_nusapay_qris_merchant');
+    $api_key = $this->config->get('payment_duitku_nusapay_qris_api_key');
+	$expired = $this->config->get('payment_duitku_nusapay_qris_expired') != null ? $this->config->get('payment_duitku_nusapay_qris_expired') : 60;
     $order_id = $this->session->data['order_id'];
     $def_curr = $this->config->get('config_currency');
     $order_total = trim($this->currency->format($order_info['total'], 'IDR', '', false));
@@ -121,7 +121,7 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
     $params = array(
           'merchantCode' => $merchant_code, // API Key Merchant /
           'paymentAmount' => intval($order_total), //transform order into integer
-          'paymentMethod' => "DA",
+          'paymentMethod' => "SQ",
           'merchantOrderId' => $order_id,
           'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
           'additionalParam' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
@@ -131,8 +131,8 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
 		  'phoneNumber' => $order_info['telephone'],
           'signature' => $signature,
 		  'expiryPeriod' => $expired,       
-          'returnUrl' => $this->url->link('extension/payment/duitku_dana/landing_redir'),
-          'callbackUrl' => $this->url->link('extension/payment/duitku_dana/payment_notification'),
+          'returnUrl' => $this->url->link('extension/payment/duitku_nusapay_qris/landing_redir'),
+          'callbackUrl' => $this->url->link('extension/payment/duitku_nusapay_qris/payment_notification'),
 		  'customerDetail' => $customerDetails,
 		  'itemDetails' => $item_details,
     );        
@@ -145,10 +145,10 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
       //Solution IF Error mail function
       //Disable mail function => Dashboard => Extensions => Events => disable 'mail_order_add'
       $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_dana_pending_mapping'), 'Duitku payment pending.');
+	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_nusapay_qris_pending_mapping'), 'Duitku payment pending.');
       			
       $this->log->write("Request : " . json_encode($params, JSON_PRETTY_PRINT) );		
-      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_dana_endpoint'), $params,  $this->log);
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_nusapay_qris_endpoint'), $params,  $this->log);
       $this->response->setOutput($redirUrl);
     }
     catch (Exception $e) {
@@ -162,11 +162,11 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
    * Landing page when payment is finished or failure or customer pressed "back" button
    * The Cart is cleared here, so make sure customer reach this page to ensure the cart is emptied when payment succeed
    * payment finish/unfinish/error url :
-   * http://[your shop’s homepage]/index.php?route=payment/duitku_dana/payment_notification
+   * http://[your shop’s homepage]/index.php?route=payment/duitku_nusapay_qris/payment_notification
    */
   public function landing_redir() {    
     $this->load->model('checkout/order');
-    $this->load->model('extension/payment/duitku_dana');    
+    $this->load->model('extension/payment/duitku_nusapay_qris');    
     $redirUrl = $this->url->link('checkout/success');
 
     if (isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] == '01') {
@@ -177,8 +177,8 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
 	  
 	  $order_id = stripslashes($_GET['merchantOrderId']);
 	  // $this->cart->clear();
-	  // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_dana_pending_mapping'), 'Duitku payment pending.');
-      $redirUrl = $this->url->link('payment/duitku_dana/failure');
+	  // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_nusapay_qris_pending_mapping'), 'Duitku payment pending.');
+      $redirUrl = $this->url->link('extension/payment/duitku_nusapay_qris/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
@@ -186,8 +186,8 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
 	  
       $order_id = stripslashes($_GET['merchantOrderId']);
 	  $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_dana_failure_mapping'), 'Duitku payment failed.');
-      $redirUrl = $this->url->link('extension/payment/duitku_dana/failure');
+	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_nusapay_qris_failure_mapping'), 'Duitku payment failed.');
+      $redirUrl = $this->url->link('extension/payment/duitku_nusapay_qris/failure');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['order_id']) && !isset($_GET['resultCode'])){
@@ -202,7 +202,7 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
   * assume there is no failure in bank transfer but waiting for transfer
   */
   public function failure() {
-    $this->load->language('extension/payment/duitku_dana');
+    $this->load->language('extension/payment/duitku_nusapay_qris');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -239,25 +239,25 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
     header("HTTP/1.1 200 OK");
 
     $this->load->model('checkout/order');
-    $this->load->model('extension/payment/duitku_dana');
+    $this->load->model('extension/payment/duitku_nusapay_qris');
 
     if (empty($_REQUEST['resultCode']) || empty($_REQUEST['merchantOrderId']) || empty($_REQUEST['reference'])) {
-          throw new Exception(__('wrong query string please contact admin.', 'duitku_dana'));
+          throw new Exception(__('wrong query string please contact admin.', 'duitku_nusapay_qris'));
     }    
 
     $order_id = stripslashes($_REQUEST['merchantOrderId']);
     $status = stripslashes($_REQUEST['resultCode']);
     $reference = stripslashes($_REQUEST['reference']);
-    $api_key = $this->config->get('payment_duitku_dana_api_key');
-    $merchant_code = $this->config->get('payment_duitku_dana_merchant');    
-    $endpoint = $this->config->get('payment_duitku_dana_endpoint');
+    $api_key = $this->config->get('payment_duitku_nusapay_qris_api_key');
+    $merchant_code = $this->config->get('payment_duitku_nusapay_qris_merchant');    
+    $endpoint = $this->config->get('payment_duitku_nusapay_qris_endpoint');
 
     $signatureCheck = md5($merchant_code . intval($_REQUEST['amount']) . $_REQUEST['merchantOrderId'] . $api_key);
 
     $order_info = $this->model_checkout_order->getOrder($order_id);
     $current_status_id = $order_info['order_status_id'];
 
-    if ($current_status_id == $this->config->get('payment_duitku_dana_success_mapping')){
+    if ($current_status_id == $this->config->get('payment_duitku_nusapay_qris_success_mapping')){
       header("HTTP/1.1 200");
       echo "Order Already Completed";
       die;
@@ -275,9 +275,9 @@ class ControllerExtensionPaymentDuitkuDana extends Controller {
     if ($order_info) {
       $this->log->write("Callback Recieved : " . json_encode($_REQUEST, JSON_PRETTY_PRINT));
         if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key)) {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_dana_success_mapping'), 'Duitku payment successful.');    
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_nusapay_qris_success_mapping'), 'Duitku payment successful.');    
         } else {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_dana_failure_mapping'), 'Duitku payment failed.');
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_nusapay_qris_failure_mapping'), 'Duitku payment failed.');
         }     
     }
 
