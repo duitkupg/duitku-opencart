@@ -137,14 +137,14 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
     );        
 
     try {	
-      $this->log->write("Request : " . json_encode($params, JSON_PRETTY_PRINT) );		
+
 	    $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_cc_endpoint'), $params,  $this->log);
       $this->response->setOutput($redirUrl);
     }
     catch (Exception $e) {
-      $data['errors'][] = $e->getMessage();
-      error_log($e->getMessage());
-      echo $e->getMessage();
+      $this->log->write('Error : ' . $e->getMessage());
+      $redirUrl = $this->url->link('extension/payment/duitku_cc/failure');
+      $this->response->setOutput($redirUrl);
     }
   }
 
@@ -222,7 +222,9 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
     $this->load->model('extension/payment/duitku_cc');
 
     if (empty($_REQUEST['resultCode']) || empty($_REQUEST['merchantOrderId']) || empty($_REQUEST['reference'])) {
-          throw new Exception(__('wrong query string please contact admin.', 'duitku'));
+      header("HTTP/1.1 404 Not Found");
+      echo "wrong query string please contact admin.";
+      die;
     }
 
     $order_id = stripslashes($_REQUEST['merchantOrderId']);
@@ -244,23 +246,27 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
     }
 
     if ($_REQUEST['signature'] != $signatureCheck){
-      header("HTTP/1.1 500 Internal Server Error");
+      header("HTTP/1.1 401 Unauthorized");
       echo "Wrong Signature";
       die;
     }
 
     $order_info = $this->model_checkout_order->getOrder($order_id);
-
+    $this->log->write("Callback Recieved : " . json_encode($_REQUEST, JSON_PRETTY_PRINT));
     //check if order id is in the database
     if ($order_info) {
-        $this->log->write("Callback Recieved : " . json_encode($_REQUEST, JSON_PRETTY_PRINT));
-        if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key)) {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_cc_success_mapping'), 'Duitku payment successful.');    
+      try {
+        if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key, $this->log)) {
+          $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_cc_success_mapping'), 'Duitku payment successful.');    
         } else {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_cc_failure_mapping'), 'Duitku payment failed.');
-        }     
+          $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_cc_failure_mapping'), 'Duitku payment failed.');
+        } 
+        echo "Callback Recieved";
+      } 
+      catch (Exception $e) {
+        $this->log->write('Error : ' . $e->getMessage());
+        echo "Validation Error";
+      }
     }
-
-    echo "success";
   }
 }
