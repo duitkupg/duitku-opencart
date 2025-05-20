@@ -84,3 +84,7 @@
 - Add Signature and Order Status Check on Callback
 - Update Logging
 - Update returnUrl when payment success
+
+2.11.8
+----
+- Add channel BNI QRIS
