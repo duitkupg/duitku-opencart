@@ -179,33 +179,29 @@ $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('paym
   public function landing_redir() {    
     $this->load->model('checkout/order');
     $this->load->model('extension/payment/duitku_va_bca');    
-    $redirUrl = $this->url->link('checkout/success');
 
-    if (isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] == '01') {
-      //if capture or pending or challenge or settlement, redirect to order received page
-      /* $this->cart->clear();
-      $redirUrl = $this->url->link('checkout/success&');
-      $this->response->redirect($redirUrl); */
-	  
-	  $order_id = stripslashes($_GET['merchantOrderId']);
-	  // $this->cart->clear();
-	  // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_bca_pending_mapping'), 'Duitku payment pending.');
-      $redirUrl = $this->url->link('payment/duitku_va_bca/failure');
-      $this->response->redirect($redirUrl);
+    if (isset($_GET['resultCode'], $_GET['merchantOrderId'], $_GET['reference'])) {
+        $order_id = stripslashes($_GET['merchantOrderId']);
+        $resultCode = $_GET['resultCode'];
 
-    }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
-      //if deny, redirect to order checkout page again
-	  
-      $order_id = stripslashes($_GET['merchantOrderId']);
-	  $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_bca_failure_mapping'), 'Duitku payment failed.');
-      $redirUrl = $this->url->link('extension/payment/duitku_va_bca/failure');
-      $this->response->redirect($redirUrl);
+        if ($resultCode === '00') {
+            // Success - redirect to success page
+            $redirUrl = $this->url->link('checkout/success');
 
-    }else if( isset($_GET['order_id']) && !isset($_GET['resultCode'])){
-      // if customer click "back" button, redirect to checkout page again
-      $redirUrl = $this->url->link('checkout/cart');
-      $this->response->redirect($redirUrl);
+        } elseif ($resultCode === '01') {
+            // Pending or challenge
+            // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_bca_pending_mapping'), 'Duitku payment pending.');
+            $redirUrl = $this->url->link('extension/payment/duitku_va_bca/pending');
+
+        } else {
+            // Failed/denied
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_bca_failure_mapping'), 'Duitku payment failed.');
+            $redirUrl = $this->url->link('extension/payment/duitku_va_bca/failure');
+        }
+
+    } elseif (isset($_GET['order_id']) && !isset($_GET['resultCode'])) {
+        // Customer clicked back
+        $redirUrl = $this->url->link('checkout/cart');
     }
     $this->response->redirect($redirUrl);
   }
@@ -213,13 +209,13 @@ $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('paym
   /*
   * assume there is no failure in bank transfer but waiting for transfer
   */
-  public function failure() {
+  public function pending() {
     $this->load->language('extension/payment/duitku_va_bca');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
     $data['heading_title'] = $this->language->get('heading_title');
-    $data['text_failure'] = $this->language->get('text_failure');
+    $data['text_failure'] = $this->language->get('text_pending');
 
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['column_right'] = $this->load->controller('common/column_right');
@@ -239,6 +235,38 @@ $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('paym
     } else {
       // CODE HERE IF HIGHER OR EQUAL
       $this->response->setOutput($this->load->view('extension/payment/duitku_checkout_va', $data));
+    }        
+  }
+
+  /*
+  * when failed create transaction or failed to pay redirect to here
+  */
+  public function failure() {
+    $this->load->language('extension/payment/duitku_va_bca');
+
+    $this->document->setTitle($this->language->get('heading_title'));
+
+    $data['heading_title'] = $this->language->get('heading_title');
+    $data['text_failure'] = $this->language->get('text_failure');
+
+    $data['column_left'] = $this->load->controller('common/column_left');
+    $data['column_right'] = $this->load->controller('common/column_right');
+    $data['content_top'] = $this->load->controller('common/content_top');
+    $data['content_bottom'] = $this->load->controller('common/content_bottom');
+    $data['footer'] = $this->load->controller('common/footer');
+    $data['header'] = $this->load->controller('common/header');
+    $data['checkout_url'] = $this->url->link('checkout/cart');
+
+     if(version_compare(VERSION, '3.0.0.0') < 0) {
+      // CODE HERE IF LOWER
+      if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/extension/payment/duitku_checkout_failure.tpl')) {
+        $this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/extension/payment/duitku_checkout_failure.tpl', $data));
+      } else {
+        $this->response->setOutput($this->load->view('default/template/extension/payment/duitku_checkout_failure', $data));
+      }
+    } else {
+      // CODE HERE IF HIGHER OR EQUAL
+      $this->response->setOutput($this->load->view('extension/payment/duitku_checkout_failure', $data));
     }        
   }
 
