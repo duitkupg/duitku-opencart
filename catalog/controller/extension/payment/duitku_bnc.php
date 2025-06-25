@@ -46,67 +46,67 @@ class ControllerExtensionPaymentDuitkuBnc extends Controller {
     //generate Signature
     $merchant_code = $this->config->get('payment_duitku_bnc_merchant');
     $api_key = $this->config->get('payment_duitku_bnc_api_key');
-	  $expired = $this->config->get('payment_duitku_bnc_expired') != null ? $this->config->get('payment_duitku_bnc_expired') : 1440;
+	$expired = $this->config->get('payment_duitku_bnc_expired') != null ? $this->config->get('payment_duitku_bnc_expired') : 1440;
     $order_id = $this->session->data['order_id'];
     $def_curr = $this->config->get('config_currency');
     $order_total = trim($this->currency->format($order_info['total'], 'IDR', '', false));
     
-    //itemDetails
-    $products = $this->cart->getProducts();
-      
-    $item_details = array();
+	//itemDetails
+	$products = $this->cart->getProducts();
+	  
+	$item_details = array();
 
-      foreach ($products as $product) {
-        $item = array(
-          'price'    => (int)$product['price']*(int)$product['quantity'],
-          'quantity' => (int)$product['quantity'],
-          'name'     => substr($product['name'], 0, 49)
+    foreach ($products as $product) {
+      $item = array(
+        'price'    => (int)$product['price']*(int)$product['quantity'],
+        'quantity' => (int)$product['quantity'],
+        'name'     => substr($product['name'], 0, 49)
+      );
+      $item_details[] = $item;
+    }
+
+    if ($this->cart->hasShipping()) {
+      $shipping_data = $this->session->data['shipping_method'];
+      if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+        $shipping_data['cost'] = $this->tax->calculate(
+          $shipping_data['cost'],
+          $shipping_data['tax_class_id'],
+          $this->config->get('config_tax'));
+        }
+
+        $shipping_item = array(
+          'price' => (int)$shipping_data['cost'],
+          'quantity' => 1,
+          'name' => 'Shipping Fee'
         );
-        $item_details[] = $item;
-      }
+        $item_details[] = $shipping_item;
+	}
 
-      if ($this->cart->hasShipping()) {
-        $shipping_data = $this->session->data['shipping_method'];
-        if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-          $shipping_data['cost'] = $this->tax->calculate(
-            $shipping_data['cost'],
-            $shipping_data['tax_class_id'],
-            $this->config->get('config_tax'));
-          }
+	$amount_price = 0;
+	foreach ($item_details as $item) {
+		$amount_price += $item['price'];
+	}
 
-          $shipping_item = array(
-            'price' => (int)$shipping_data['cost'],
-            'quantity' => 1,
-            'name' => 'Shipping Fee'
-          );
-          $item_details[] = $shipping_item;
-    }
-
-    $amount_price = 0;
-    foreach ($item_details as $item) {
-      $amount_price += $item['price'];
-    }
-
-    if ($amount_price != $order_total) {
-      $coupon_item = array(
-        'price'    => (int)$order_total - (int)$amount_price,
-        'quantity' => 1,
-        'name'     => 'Coupon'
-        );
-      $item_details[] = $coupon_item;
-    }
-    
-    $billing_address = array(
-      'firstName' => $order_info['payment_firstname'],
-      'lastName' => $order_info['payment_lastname'],
-      'address' => $order_info['payment_address_1'],
-      'city' => $order_info['payment_city'],
-      'postalCode' => $order_info['payment_postcode'],
-      'phone' => $order_info['telephone'],
-      'countryCode' => "ID"
-    );
-    
-$shipping_address = array(
+	if ($amount_price != $order_total) {
+		$coupon_item = array(
+			'price'    => (int)$order_total - (int)$amount_price,
+			'quantity' => 1,
+			'name'     => 'Coupon'
+		  );
+		$item_details[] = $coupon_item;
+	}
+	
+	$billing_address = array(
+	  'firstName' => $order_info['payment_firstname'],
+	  'lastName' => $order_info['payment_lastname'],
+	  'address' => $order_info['payment_address_1'],
+	  'city' => $order_info['payment_city'],
+	  'postalCode' => $order_info['payment_postcode'],
+	  'phone' => $order_info['telephone'],
+	  'countryCode' => "ID"
+	);
+	
+  $shipping_address = array(
     'firstName' => $order_info['shipping_firstname'],
     'lastName' => $order_info['shipping_lastname'],
     'address' => $order_info['shipping_address_1'].", ".$order_info['shipping_address_2'],
@@ -116,52 +116,52 @@ $shipping_address = array(
     'countryCode' => "ID"
   );
 
-    $customerDetails = array(
-      'firstName' => $order_info['firstname'],
-      'lastName' => $order_info['lastname'],
-      'email' => $order_info['email'],
-      'phoneNumber' => $order_info['telephone'],
-      'billingAddress' => $billing_address,
-      'shippingAddress' => $shipping_address
-    );
-    
-    $signature = md5($merchant_code . $order_id . intval($order_total) . $api_key);    
+  $customerDetails = array(
+    'firstName' => $order_info['firstname'],
+    'lastName' => $order_info['lastname'],
+    'email' => $order_info['email'],
+    'phoneNumber' => $order_info['telephone'],
+    'billingAddress' => $billing_address,
+    'shippingAddress' => $shipping_address
+  );
+	
+	$signature = md5($merchant_code . $order_id . intval($order_total) . $api_key);    
 
     // Prepare Parameters
     $params = array(
-          'merchantCode' => $merchant_code, // API Key Merchant /
-          'paymentAmount' => intval($order_total), //transform order into integer
-          'paymentMethod' => "NC",
-          'merchantOrderId' => $order_id,
-          'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
-          'additionalParam' => $order_info['firstname'] . " " . $order_info['lastname'],
+      'merchantCode' => $merchant_code, // API Key Merchant /
+      'paymentAmount' => intval($order_total), //transform order into integer
+      'paymentMethod' => "NC",
+      'merchantOrderId' => $order_id,
+      'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
+      'additionalParam' => $order_info['firstname'] . " " . $order_info['lastname'],
       'merchantUserInfo' => $this->config->get('config_name'),
       'customerVaName' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
-                    'email' => $order_info['email'],
-          'phoneNumber' => $order_info['telephone'],
-          'signature' => $signature,
-          'expiryPeriod' => $expired,       
-          'returnUrl' => $this->url->link('extension/payment/duitku_bnc/landing_redir'),
-          'callbackUrl' => $this->url->link('extension/payment/duitku_bnc/payment_notification'),
-          'customerDetail' => $customerDetails,
-          'itemDetails' => $item_details,
-    );         
+      'email' => $order_info['email'],
+      'phoneNumber' => $order_info['telephone'],
+      'signature' => $signature,
+      'expiryPeriod' => $expired,       
+      'returnUrl' => $this->url->link('extension/payment/duitku_bnc/landing_redir'),
+      'callbackUrl' => $this->url->link('extension/payment/duitku_bnc/payment_notification'),
+      'customerDetail' => $customerDetails,
+      'itemDetails' => $item_details,
+    );        
 
-    //for va cart is automatically clear before redirection
-    //$this->cart->clear();
+	//for va cart is automatically clear before redirection
+	//$this->cart->clear();
 	
     try {  
-	      //Solution IF Error mail function
+      //Solution IF Error mail function
       //Disable mail function => Dashboard => Extensions => Events => disable 'mail_order_add'
-      	    $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_bnc_pending_mapping'), 'Duitku payment pending.');
-if ($this->config->get('payment_duitku_bnc_environment') == 'Production'){
+	    $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_bnc_pending_mapping'), 'Duitku payment pending.');
+      if ($this->config->get('payment_duitku_bnc_environment') == 'Production'){
         $baseUrl = 'https://passport.duitku.com/webapi';
       } else {
         $baseUrl = 'https://sandbox.duitku.com/webapi';
-      }      		
-	    $redirUrl = DuitkuCore_Web::getRedirectionUrl($baseUrl, $params,  $this->log);
-$this->cart->clear();
-      $this->response->setOutput($redirUrl);  
+      }
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($baseUrl, $params,  $this->log);
+      $this->cart->clear();
+      $this->response->setOutput($redirUrl);
     }
     catch (Exception $e) {
       $this->log->write('Error : ' . $e->getMessage());
@@ -281,9 +281,11 @@ $this->cart->clear();
     $this->load->model('checkout/order');
     $this->load->model('extension/payment/duitku_bnc');
 
+    $this->log->write("Callback Recieved : " . json_encode($_REQUEST, JSON_PRETTY_PRINT));
+
     if (empty($_REQUEST['resultCode']) || empty($_REQUEST['merchantOrderId']) || empty($_REQUEST['reference'])) {
       header("HTTP/1.1 404 Not Found");
-      echo "wrong query string please contact admin.";
+      $this->log->write("Wrong query string please contact admin.");
       die;
     }    
 
@@ -305,32 +307,35 @@ $this->cart->clear();
 
     if ($current_status_id == $this->config->get('payment_duitku_bnc_success_mapping')){
       header("HTTP/1.1 200");
-      echo "Order Already Completed";
+      $this->log->write("Order Already Completed");
       die;
     }
 
     if ($_REQUEST['signature'] != $signatureCheck){
       header("HTTP/1.1 401 Unauthorized");
-      echo "Wrong Signature";
+      $this->log->write("Wrong Signature");
       die;
     }
 
     $order_info = $this->model_checkout_order->getOrder($order_id);
-    $this->log->write("Callback Recieved : " . json_encode($_REQUEST, JSON_PRETTY_PRINT));
+
     //check if order id is in the database
-    if ($order_info) {
-      try {
-        if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key, $this->log)) {
+    if (!$order_info) {
+      header("HTTP/1.1 404 Unauthorized");
+      $this->log->write("Orders Not Found");
+      die;
+    }
+    
+    try {
+        if ($status == '00' && DuitkuCore_Web::validateTransaction($baseUrl, $merchant_code, $order_id, $reference, $api_key, $this->log)) {
           $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_bnc_success_mapping'), 'Duitku payment successful.');    
         } else {
           $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_bnc_failure_mapping'), 'Duitku payment failed.');
         } 
-        echo "Callback Recieved";
+        $this->log->write("Callback Recieved Succesfully");
       } 
       catch (Exception $e) {
-        $this->log->write('Error : ' . $e->getMessage());
-        echo "Validation Error";
+        $this->log->write('Callback Error : ' . $e->getMessage());
       }
-    }
   }
 }
