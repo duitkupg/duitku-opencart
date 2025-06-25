@@ -52,13 +52,15 @@
             </div>
           </div>
 		  
-		  <div class="form-group required">
-            <label class="col-sm-2 control-label" for="input-merchant-endpoint">{{ entry_endpoint }}</label>
+		  <div class="form-group">
+            <label class="col-sm-2 control-label" for="payment_duitku_indomaret_environment">{{ entry_environment }}</label>
             <div class="col-sm-10">
-              <input type="text" name="payment_duitku_indomaret_endpoint" value="{{ payment_duitku_indomaret_endpoint }}" placeholder="{{ entry_endpoint }}" id="input-merchant-endpoint" class="form-control" />
-              {% if error.endpoint %}
-              <div class="text-danger">{{ error.endpoint }}</div>
-              {% endif %}
+              <select name="payment_duitku_indomaret_environment" id="payment_duitku_indomaret_environment" class="form-control">
+                {% for environmentType in environment %}
+                  {% set option_label = attribute(_context, environmentType) %}
+                  <option value="{{ option_label }}"{% if option_label == payment_duitku_indomaret_environment %}selected{% endif %}>{{ option_label }}</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
 		  
@@ -134,9 +136,6 @@
               <input type="text" name="payment_duitku_indomaret_sort_order" value="{{ payment_duitku_indomaret_sort_order }}" placeholder="{{ entry_sort_order }}" id="payment_duitku_indomaret_sort_order" class="form-control" />
             </div>
           </div>
-		<div>
-			<center><font size="1">version 2.3</font></center>
-		</div>
 		  
         </form>
       </div>

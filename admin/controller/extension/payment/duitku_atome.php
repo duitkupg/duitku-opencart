@@ -41,8 +41,10 @@ class ControllerExtensionPaymentDuitkuAtome extends Controller {
       'entry_status',
       'entry_sort_order',                              
       'entry_duitku_atome_success_mapping',
-	  'entry_duitku_atome_pending_mapping',
-      'entry_duitku_atome_failure_mapping',      
+	    'entry_duitku_atome_pending_mapping',
+      'entry_duitku_atome_failure_mapping',    
+      'entry_duitku_environment_sandbox',
+      'entry_duitku_environment_production',    
       'entry_display_name',
       'entry_environment',
       'entry_endpoint',
@@ -116,6 +118,8 @@ class ControllerExtensionPaymentDuitkuAtome extends Controller {
 	$data['statuses'] = array('payment_duitku_atome_success_mapping', 'payment_duitku_atome_pending_mapping', 'payment_duitku_atome_failure_mapping');
     $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
 
+    $data['environment'] = array ('entry_duitku_environment_sandbox','entry_duitku_environment_production', );
+
     $this->load->model('localisation/geo_zone');
 
     $data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
@@ -123,7 +127,6 @@ class ControllerExtensionPaymentDuitkuAtome extends Controller {
   $data['column_left'] = $this->load->controller('common/column_left');
   $data['header'] = $this->load->controller('common/header');
   $data['footer'] = $this->load->controller('common/footer');
-  
   
   if(!$this->currency->has('IDR'))
   {
@@ -148,7 +151,7 @@ class ControllerExtensionPaymentDuitkuAtome extends Controller {
     if (!$this->request->post['payment_duitku_atome_display_name']) {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }
-        
+
 
       // check for empty values
       if (!$this->request->post['payment_duitku_atome_api_key']) {
@@ -157,11 +160,6 @@ class ControllerExtensionPaymentDuitkuAtome extends Controller {
 
       if (!$this->request->post['payment_duitku_atome_merchant']) {
         $this->error['server_key_v2'] = $this->language->get('error_server_key');
-      }        
-      
-
-     if (!$this->request->post['payment_duitku_atome_endpoint']) {
-        $this->error['endpoint'] = $this->language->get('error_endpoint');
       }        
 
     if (!$this->error) {

@@ -43,7 +43,9 @@ class ControllerExtensionPaymentDuitkuMG extends Controller {
       'entry_status',
       'entry_sort_order',                              
       'entry_duitku_mg_success_mapping',
-      'entry_duitku_mg_failure_mapping',      
+      'entry_duitku_mg_failure_mapping',   
+      'entry_duitku_environment_sandbox',
+      'entry_duitku_environment_production',    
       'entry_display_name',
       'entry_environment',
       'entry_endpoint',
@@ -113,6 +115,7 @@ class ControllerExtensionPaymentDuitkuMG extends Controller {
     }
 
     $this->load->model('localisation/order_status');
+    $data['environment'] = array ('entry_duitku_environment_sandbox','entry_duitku_environment_production', );
 
 	$data['statuses'] = array('payment_duitku_mg_success_mapping', 'payment_duitku_mg_failure_mapping');
     $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
@@ -158,11 +161,7 @@ class ControllerExtensionPaymentDuitkuMG extends Controller {
 
       if (!$this->request->post['payment_duitku_mg_merchant']) {
         $this->error['server_key_v2'] = $this->language->get('error_server_key');
-      }        
-
-     if (!$this->request->post['payment_duitku_mg_endpoint']) {
-        $this->error['endpoint'] = $this->language->get('error_endpoint');
-      }        
+      }            
 
     if (!$this->error) {
       return true;

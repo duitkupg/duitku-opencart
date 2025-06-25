@@ -140,14 +140,17 @@ class ControllerExtensionPaymentDuitkuAtome extends Controller {
 	//$this->cart->clear();
 	
     try {  
-
       //Solution IF Error mail function
       //Disable mail function => Dashboard => Extensions => Events => disable 'mail_order_add'
+$this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_atome_pending_mapping'), 'Duitku payment pending.');
+      if ($this->config->get('payment_duitku_atome_environment') == 'Production'){
+        $baseUrl = 'https://passport.duitku.com/webapi';
+      } else {
+        $baseUrl = 'https://sandbox.duitku.com/webapi';
+      }
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($baseUrl, $params,  $this->log);
       $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_atome_pending_mapping'), 'Duitku payment pending.');
-
-      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_atome_endpoint'), $params,$this->log);
-      $this->response->setOutput($redirUrl);	  
+	        $this->response->setOutput($redirUrl);	  
     }
     catch (Exception $e) {
       $this->log->write('Error : ' . $e->getMessage());
@@ -250,7 +253,11 @@ class ControllerExtensionPaymentDuitkuAtome extends Controller {
     $reference = stripslashes($_REQUEST['reference']);
     $api_key = $this->config->get('payment_duitku_atome_api_key');
     $merchant_code = $this->config->get('payment_duitku_atome_merchant');    
-    $endpoint = $this->config->get('payment_duitku_atome_endpoint');
+    if ($this->config->get('payment_duitku_atome_environment') == 'Production'){
+      $baseUrl = 'https://passport.duitku.com/webapi';
+    } else {
+      $baseUrl = 'https://sandbox.duitku.com/webapi';
+    }
 
     $signatureCheck = md5($merchant_code . intval($_REQUEST['amount']) . $_REQUEST['merchantOrderId'] . $api_key);
 

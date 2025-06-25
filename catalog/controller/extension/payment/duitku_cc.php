@@ -137,8 +137,13 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
     );        
 
     try {	
-
-	    $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_cc_endpoint'), $params,  $this->log);
+if ($this->config->get('payment_duitku_cc_environment') == 'Production'){
+        $baseUrl = 'https://passport.duitku.com/webapi';
+      } else {
+        $baseUrl = 'https://sandbox.duitku.com/webapi';
+      }
+	    $redirUrl = DuitkuCore_Web::getRedirectionUrl($baseUrl, $params,  $this->log);
+$this->cart->clear();
       $this->response->setOutput($redirUrl);
     }
     catch (Exception $e) {
@@ -232,7 +237,11 @@ class ControllerExtensionPaymentDuitkuCC extends Controller {
     $reference = stripslashes($_REQUEST['reference']);
     $api_key = $this->config->get('payment_duitku_cc_api_key');
     $merchant_code = $this->config->get('payment_duitku_cc_merchant');    
-    $endpoint = $this->config->get('payment_duitku_cc_endpoint');
+    if ($this->config->get('payment_duitku_cc_environment') == 'Production'){
+      $baseUrl = 'https://passport.duitku.com/webapi';
+    } else {
+      $baseUrl = 'https://sandbox.duitku.com/webapi';
+    }
 
     $signatureCheck = md5($merchant_code . intval($_REQUEST['amount']) . $_REQUEST['merchantOrderId'] . $api_key);
 
