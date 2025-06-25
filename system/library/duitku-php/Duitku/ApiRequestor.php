@@ -45,7 +45,7 @@ class Duitku_ApiRequestor {
     else {
       $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $result_array = json_decode($result);
-      if ($httpcode != 200) {
+      if ($httpcode != 200 || !isset($result_array->statusCode) || $result_array->statusCode != '00') {
         $message = $result;            
         throw new Exception($message, $httpcode);
       }
