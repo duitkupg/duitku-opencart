@@ -13,19 +13,22 @@ $_['text_edit']          = 'Configure Duitku Payment Gateway';
 
 $_['entry_environment']  = 'Environment'; // v2 API only
 $_['entry_endpoint']     = 'URL Endpoint'; 
-$_['entry_merchant']     = 'Merchant ID:'; // v1 API only
+$_['entry_merchant']     = 'Merchant Code'; // v1 API only
 $_['entry_api_key']      = 'Merchant API Key'; // v1 API only
 $_['entry_expired_period']	= 'Expired Period';
-$_['entry_test']         = 'Test Mode:';
+$_['entry_test']         = 'Test Mode';
 $_['entry_total']        = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';
-$_['entry_order_status'] = 'Order Status:';
-$_['entry_geo_zone']     = 'Geo Zone:';
-$_['entry_status']       = 'Status:';
-$_['entry_sort_order']   = 'Sort Order:';
-$_['entry_payment_duitku_dana_success_mapping'] = 'Map Payment Success Status to Order Status:';
-$_['entry_payment_duitku_dana_pending_mapping'] = 'Map Payment Pending Status to Order Status:';
-$_['entry_payment_duitku_dana_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
-$_['entry_display_name'] = 'Display name:';
+$_['entry_order_status'] = 'Order Status';
+$_['entry_geo_zone']     = 'Geo Zone';
+$_['entry_status']       = 'Status';
+$_['entry_sort_order']   = 'Sort Order';
+$_['entry_payment_duitku_dana_success_mapping'] = 'Map Payment Success Status to Order Status';
+$_['entry_payment_duitku_dana_pending_mapping'] = 'Map Payment Pending Status to Order Status';
+$_['entry_payment_duitku_dana_failure_mapping'] = 'Map Payment Failure Status to Order Status';
+$_['entry_display_name'] = 'Display name';
+
+$_['entry_duitku_environment_sandbox'] = 'Sandbox';
+$_['entry_duitku_environment_production'] = 'Production';
 
 // Error
 $_['error_permission']   = 'Warning: You do not have permission to modify the Duitku Payment!';
