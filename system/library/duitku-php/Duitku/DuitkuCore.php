@@ -6,11 +6,7 @@ class DuitkuCore_Web {
   {
     //$payloads = array();
     //$payloads = array_replace_recursive($payloads, $params);    
-    if ($params['paymentMethod'] == 'MG') {
-      $url = $baseUrl . '/api/merchant/creditcard/inquiry';   
-    } else {
-      $url = $baseUrl . '/api/merchant/v2/inquiry';   
-    }
+    $url = $baseUrl . '/api/merchant/v2/inquiry';
     $log->write("URL : " . $url);
     $log->write("Request : " . json_encode($params, JSON_PRETTY_PRINT) );		
     $result = Duitku_ApiRequestor::post($url,$params);
