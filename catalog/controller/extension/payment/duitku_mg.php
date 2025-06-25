@@ -178,7 +178,7 @@ $this->cart->clear();
     if (isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] == '00') {
       //if capture or pending or challenge or settlement, redirect to order received page
       $this->cart->clear();
-      $redirUrl = $this->url->link('checkout/success&');
+      $redirUrl = $this->url->link('checkout/success');
       $this->response->redirect($redirUrl);
 
     }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
