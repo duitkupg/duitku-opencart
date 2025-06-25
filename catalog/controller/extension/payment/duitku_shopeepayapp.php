@@ -106,13 +106,23 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
 	  'countryCode' => "ID"
 	);
 	
+$shipping_address = array(
+    'firstName' => $order_info['shipping_firstname'],
+    'lastName' => $order_info['shipping_lastname'],
+    'address' => $order_info['shipping_address_1'].", ".$order_info['shipping_address_2'],
+    'city' => $order_info['shipping_city'],
+    'postalCode' => $order_info['shipping_postcode'],
+    'phone' => $order_info['telephone'],
+    'countryCode' => "ID"
+  );
+
 	$customerDetails = array(
-		'firstName' => $order_info['payment_firstname'],
-		'lastName' => $order_info['payment_lastname'],
+		'firstName' => $order_info['firstname'],
+		'lastName' => $order_info['lastname'],
 		'email' => $order_info['email'],
 		'phoneNumber' => $order_info['telephone'],
 		'billingAddress' => $billing_address,
-		'shippingAddress' => $billing_address
+		'shippingAddress' => $shipping_address
 	);
 	
 	$signature = md5($merchant_code . $order_id . intval($order_total) . $api_key);    
@@ -124,10 +134,10 @@ class ControllerExtensionPaymentDuitkuShopeepayapp extends Controller {
           'paymentMethod' => "SA",
           'merchantOrderId' => $order_id,
           'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
-          'additionalParam' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
-          'merchantUserInfo' => $order_info['email'],
-		  'customerVaName' => $order_info['email'],
-		  'email' => $order_info['email'],
+          'additionalParam' => $order_info['firstname'] . " " . $order_info['lastname'],
+      'merchantUserInfo' => $this->config->get('config_name'),
+      'customerVaName' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
+          		  'email' => $order_info['email'],
 		  'phoneNumber' => $order_info['telephone'],
           'signature' => $signature,
 		  'expiryPeriod' => $expired,       
