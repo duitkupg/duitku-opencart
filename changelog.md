@@ -84,3 +84,14 @@
 - Add Signature and Order Status Check on Callback
 - Update Logging
 - Update returnUrl when payment success
+
+2.11.8
+----
+- Add channel BNI QRIS
+- Add logging in check transaction
+- Change Setting Endpoint to Environment
+- Update Request Parameter, Add Shipping Address
+- Update Landing Redirect, Fix Pending and Failure Redirect
+- Change Return Text Callback to Log
+- Change URL Payment MG to V2 Inquiry
+- Update Validate statusCode when request

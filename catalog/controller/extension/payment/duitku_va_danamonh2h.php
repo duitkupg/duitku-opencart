@@ -106,55 +106,67 @@ class ControllerExtensionPaymentDuitkuVADanamonh2h extends Controller {
 	  'countryCode' => "ID"
 	);
 	
-	$customerDetails = array(
-		'firstName' => $order_info['payment_firstname'],
-		'lastName' => $order_info['payment_lastname'],
-		'email' => $order_info['email'],
-		'phoneNumber' => $order_info['telephone'],
-		'billingAddress' => $billing_address,
-		'shippingAddress' => $billing_address
-	);
+  $shipping_address = array(
+    'firstName' => $order_info['shipping_firstname'],
+    'lastName' => $order_info['shipping_lastname'],
+    'address' => $order_info['shipping_address_1'].", ".$order_info['shipping_address_2'],
+    'city' => $order_info['shipping_city'],
+    'postalCode' => $order_info['shipping_postcode'],
+    'phone' => $order_info['telephone'],
+    'countryCode' => "ID"
+  );
+
+  $customerDetails = array(
+    'firstName' => $order_info['firstname'],
+    'lastName' => $order_info['lastname'],
+    'email' => $order_info['email'],
+    'phoneNumber' => $order_info['telephone'],
+    'billingAddress' => $billing_address,
+    'shippingAddress' => $shipping_address
+  );
 	
 	$signature = md5($merchant_code . $order_id . intval($order_total) . $api_key);    
 
     // Prepare Parameters
     $params = array(
-          'merchantCode' => $merchant_code, // API Key Merchant /
-          'paymentAmount' => intval($order_total), //transform order into integer
-          'paymentMethod' => "DM",
-          'merchantOrderId' => $order_id,
-          'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
-          'additionalParam' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
-          'merchantUserInfo' => $order_info['email'],
-		  'customerVaName' => $order_info['email'],
-		  'email' => $order_info['email'],
-		  'phoneNumber' => $order_info['telephone'],
-          'signature' => $signature,
-		  'expiryPeriod' => $expired,       
-          'returnUrl' => $this->url->link('extension/payment/duitku_va_danamonh2h/landing_redir'),
-          'callbackUrl' => $this->url->link('extension/payment/duitku_va_danamonh2h/payment_notification'),
-		  'customerDetail' => $customerDetails,
-		  'itemDetails' => $item_details,
-    );       
+      'merchantCode' => $merchant_code, // API Key Merchant /
+      'paymentAmount' => intval($order_total), //transform order into integer
+      'paymentMethod' => "DM",
+      'merchantOrderId' => $order_id,
+      'productDetails' => $this->config->get('config_name') . ' Order : #' . $order_id,
+      'additionalParam' => $order_info['firstname'] . " " . $order_info['lastname'],
+      'merchantUserInfo' => $this->config->get('config_name'),
+      'customerVaName' => $order_info['payment_firstname'] . " " . $order_info['payment_lastname'],
+      'email' => $order_info['email'],
+      'phoneNumber' => $order_info['telephone'],
+      'signature' => $signature,
+      'expiryPeriod' => $expired,       
+      'returnUrl' => $this->url->link('extension/payment/duitku_va_danamonh2h/landing_redir'),
+      'callbackUrl' => $this->url->link('extension/payment/duitku_va_danamonh2h/payment_notification'),
+      'customerDetail' => $customerDetails,
+      'itemDetails' => $item_details,
+    );        
 
 	//for va cart is automatically clear before redirection
 	//$this->cart->clear();
 	
-    try {
-
+    try {  
       //Solution IF Error mail function
       //Disable mail function => Dashboard => Extensions => Events => disable 'mail_order_add'
+	    $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_pending_mapping'), 'Duitku payment pending.');
+      if ($this->config->get('payment_duitku_va_danamonh2h_environment') == 'Production'){
+        $baseUrl = 'https://passport.duitku.com/webapi';
+      } else {
+        $baseUrl = 'https://sandbox.duitku.com/webapi';
+      }
+      $redirUrl = DuitkuCore_Web::getRedirectionUrl($baseUrl, $params,  $this->log);
       $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_pending_mapping'), 'Duitku payment pending.');
-      				
-      $this->log->write("Request : " . json_encode($params, JSON_PRETTY_PRINT) );		
-      $redirUrl = DuitkuCore_Web::getRedirectionUrl($this->config->get('payment_duitku_va_danamonh2h_endpoint'), $params,  $this->log);
       $this->response->setOutput($redirUrl);
     }
     catch (Exception $e) {
-      $data['errors'][] = $e->getMessage();
-      error_log($e->getMessage());
-      echo $e->getMessage();
+      $this->log->write('Error : ' . $e->getMessage());
+      $redirUrl = $this->url->link('extension/payment/duitku_va_danamonh2h/failure');
+      $this->response->setOutput($redirUrl);
     }
   }
 
@@ -162,38 +174,34 @@ class ControllerExtensionPaymentDuitkuVADanamonh2h extends Controller {
    * Landing page when payment is finished or failure or customer pressed "back" button
    * The Cart is cleared here, so make sure customer reach this page to ensure the cart is emptied when payment succeed
    * payment finish/unfinish/error url :
-   * http://[your shop�s homepage]/index.php?route=payment/duitku_va_danamonh2h/payment_notification
+   * http://[your shop’s homepage]/index.php?route=payment/duitku_va_danamonh2h/payment_notification
    */
   public function landing_redir() {    
     $this->load->model('checkout/order');
     $this->load->model('extension/payment/duitku_va_danamonh2h');    
-    $redirUrl = $this->url->link('checkout/success');
 
-    if (isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] == '01') {
-      //if capture or pending or challenge or settlement, redirect to order received page
-      /* $this->cart->clear();
-      $redirUrl = $this->url->link('checkout/success&');
-      $this->response->redirect($redirUrl); */
-	  
-	  $order_id = stripslashes($_GET['merchantOrderId']);
-	  // $this->cart->clear();
-	  // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_pending_mapping'), 'Duitku payment pending.');
-      $redirUrl = $this->url->link('payment/duitku_va_danamonh2h/failure');
-      $this->response->redirect($redirUrl);
+    if (isset($_GET['resultCode'], $_GET['merchantOrderId'], $_GET['reference'])) {
+        $order_id = stripslashes($_GET['merchantOrderId']);
+        $resultCode = $_GET['resultCode'];
 
-    }else if( isset($_GET['resultCode']) && isset($_GET['merchantOrderId']) && isset($_GET['reference']) && $_GET['resultCode'] != '00') {
-      //if deny, redirect to order checkout page again
-	  
-      $order_id = stripslashes($_GET['merchantOrderId']);
-	  $this->cart->clear();
-	  $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_failure_mapping'), 'Duitku payment failed.');
-      $redirUrl = $this->url->link('extension/payment/duitku_va_danamonh2h/failure');
-      $this->response->redirect($redirUrl);
+        if ($resultCode === '00') {
+            // Success - redirect to success page
+            $redirUrl = $this->url->link('checkout/success');
 
-    }else if( isset($_GET['order_id']) && !isset($_GET['resultCode'])){
-      // if customer click "back" button, redirect to checkout page again
-      $redirUrl = $this->url->link('checkout/cart');
-      $this->response->redirect($redirUrl);
+        } elseif ($resultCode === '01') {
+            // Pending or challenge
+            // $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_pending_mapping'), 'Duitku payment pending.');
+            $redirUrl = $this->url->link('extension/payment/duitku_va_danamonh2h/pending');
+
+        } else {
+            // Failed/denied
+            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_failure_mapping'), 'Duitku payment failed.');
+            $redirUrl = $this->url->link('extension/payment/duitku_va_danamonh2h/failure');
+        }
+
+    } elseif (isset($_GET['order_id']) && !isset($_GET['resultCode'])) {
+        // Customer clicked back
+        $redirUrl = $this->url->link('checkout/cart');
     }
     $this->response->redirect($redirUrl);
   }
@@ -201,13 +209,13 @@ class ControllerExtensionPaymentDuitkuVADanamonh2h extends Controller {
   /*
   * assume there is no failure in bank transfer but waiting for transfer
   */
-  public function failure() {
+  public function pending() {
     $this->load->language('extension/payment/duitku_va_danamonh2h');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
     $data['heading_title'] = $this->language->get('heading_title');
-    $data['text_failure'] = $this->language->get('text_failure');
+    $data['text_failure'] = $this->language->get('text_pending');
 
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['column_right'] = $this->load->controller('common/column_right');
@@ -230,6 +238,38 @@ class ControllerExtensionPaymentDuitkuVADanamonh2h extends Controller {
     }        
   }
 
+  /*
+  * when failed create transaction or failed to pay redirect to here
+  */
+  public function failure() {
+    $this->load->language('extension/payment/duitku_va_danamonh2h');
+
+    $this->document->setTitle($this->language->get('heading_title'));
+
+    $data['heading_title'] = $this->language->get('heading_title');
+    $data['text_failure'] = $this->language->get('text_failure');
+
+    $data['column_left'] = $this->load->controller('common/column_left');
+    $data['column_right'] = $this->load->controller('common/column_right');
+    $data['content_top'] = $this->load->controller('common/content_top');
+    $data['content_bottom'] = $this->load->controller('common/content_bottom');
+    $data['footer'] = $this->load->controller('common/footer');
+    $data['header'] = $this->load->controller('common/header');
+    $data['checkout_url'] = $this->url->link('checkout/cart');
+
+     if(version_compare(VERSION, '3.0.0.0') < 0) {
+      // CODE HERE IF LOWER
+      if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/extension/payment/duitku_checkout_failure.tpl')) {
+        $this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/extension/payment/duitku_checkout_failure.tpl', $data));
+      } else {
+        $this->response->setOutput($this->load->view('default/template/extension/payment/duitku_checkout_failure', $data));
+      }
+    } else {
+      // CODE HERE IF HIGHER OR EQUAL
+      $this->response->setOutput($this->load->view('extension/payment/duitku_checkout_failure', $data));
+    }        
+  }
+
    /**
    * Called when Duitku server sends notification to this server.
    * It will change order status according to transaction status and fraud
@@ -241,8 +281,12 @@ class ControllerExtensionPaymentDuitkuVADanamonh2h extends Controller {
     $this->load->model('checkout/order');
     $this->load->model('extension/payment/duitku_va_danamonh2h');
 
+    $this->log->write("Callback Recieved : " . json_encode($_REQUEST, JSON_PRETTY_PRINT));
+
     if (empty($_REQUEST['resultCode']) || empty($_REQUEST['merchantOrderId']) || empty($_REQUEST['reference'])) {
-          throw new Exception(__('wrong query string please contact admin.', 'duitku_va_danamonh2h'));
+      header("HTTP/1.1 404 Not Found");
+      $this->log->write("Wrong query string please contact admin.");
+      die;
     }    
 
     $order_id = stripslashes($_REQUEST['merchantOrderId']);
@@ -250,7 +294,11 @@ class ControllerExtensionPaymentDuitkuVADanamonh2h extends Controller {
     $reference = stripslashes($_REQUEST['reference']);
     $api_key = $this->config->get('payment_duitku_va_danamonh2h_api_key');
     $merchant_code = $this->config->get('payment_duitku_va_danamonh2h_merchant');    
-    $endpoint = $this->config->get('payment_duitku_va_danamonh2h_endpoint');
+    if ($this->config->get('payment_duitku_va_danamonh2h_environment') == 'Production'){
+      $baseUrl = 'https://passport.duitku.com/webapi';
+    } else {
+      $baseUrl = 'https://sandbox.duitku.com/webapi';
+    }
 
     $signatureCheck = md5($merchant_code . intval($_REQUEST['amount']) . $_REQUEST['merchantOrderId'] . $api_key);
 
@@ -259,28 +307,35 @@ class ControllerExtensionPaymentDuitkuVADanamonh2h extends Controller {
 
     if ($current_status_id == $this->config->get('payment_duitku_va_danamonh2h_success_mapping')){
       header("HTTP/1.1 200");
-      echo "Order Already Completed";
+      $this->log->write("Order Already Completed");
       die;
     }
 
     if ($_REQUEST['signature'] != $signatureCheck){
-      header("HTTP/1.1 500 Internal Server Error");
-      echo "Wrong Signature";
+      header("HTTP/1.1 401 Unauthorized");
+      $this->log->write("Wrong Signature");
       die;
     }
 
     $order_info = $this->model_checkout_order->getOrder($order_id);
 
     //check if order id is in the database
-    if ($order_info) {
-      $this->log->write("Callback Recieved : " . json_encode($_REQUEST, JSON_PRETTY_PRINT));
-        if ($status == '00' && DuitkuCore_Web::validateTransaction($endpoint, $merchant_code, $order_id, $reference, $api_key)) {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_success_mapping'), 'Duitku payment successful.');    
-        } else {
-            $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_failure_mapping'), 'Duitku payment failed.');
-        }     
+    if (!$order_info) {
+      header("HTTP/1.1 404 Unauthorized");
+      $this->log->write("Orders Not Found");
+      die;
     }
-
-    echo "success";
+    
+    try {
+        if ($status == '00' && DuitkuCore_Web::validateTransaction($baseUrl, $merchant_code, $order_id, $reference, $api_key, $this->log)) {
+          $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_success_mapping'), 'Duitku payment successful.');    
+        } else {
+          $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_duitku_va_danamonh2h_failure_mapping'), 'Duitku payment failed.');
+        } 
+        $this->log->write("Callback Recieved Succesfully");
+      } 
+      catch (Exception $e) {
+        $this->log->write('Callback Error : ' . $e->getMessage());
+      }
   }
 }

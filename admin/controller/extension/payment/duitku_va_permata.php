@@ -42,7 +42,9 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
       'entry_sort_order',                              
       'entry_duitku_va_permata_success_mapping',
 	  'entry_duitku_va_permata_pending_mapping',
-      'entry_duitku_va_permata_failure_mapping',      
+      'entry_duitku_va_permata_failure_mapping',    
+      'entry_duitku_environment_sandbox',
+      'entry_duitku_environment_production',   
       'entry_display_name',
       'entry_environment',
       'entry_endpoint',
@@ -113,6 +115,7 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
     }
 
     $this->load->model('localisation/order_status');
+    $data['environment'] = array ('entry_duitku_environment_sandbox','entry_duitku_environment_production', );
 
 	$data['statuses'] = array('payment_duitku_va_permata_success_mapping', 'payment_duitku_va_permata_pending_mapping', 'payment_duitku_va_permata_failure_mapping');
     $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
@@ -160,14 +163,9 @@ class ControllerExtensionPaymentDuitkuVAPermata extends Controller {
 		$this->error['server_key_v2'] = $this->language->get('error_server_key');
 	}
 
-	if (!$this->request->post['payment_duitku_va_permata_expired'] OR $this->request->post['payment_duitku_va_permata_expired'] > 1440 ) {
+	if (!$this->request->post['payment_duitku_va_permata_expired'] OR $this->request->post['payment_duitku_va_permata_expired'] > 1440 OR $this->request->post['payment_duitku_va_permata_expired'] < 0) {
 		$this->error['expired_period'] = $this->language->get('error_expired_period');
-	}        
-
-
-	if (!$this->request->post['payment_duitku_va_permata_endpoint']) {
-		$this->error['endpoint'] = $this->language->get('error_endpoint');
-	}        
+	}             
 
     if (!$this->error) {
       return true;
