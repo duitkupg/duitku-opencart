@@ -53,12 +53,12 @@
           </div>
 		  
 		  <div class="form-group">
-            <label class="col-sm-2 control-label" for="payment_duitku_va_mandiri2h_environment">{{ entry_environment }}</label>
+            <label class="col-sm-2 control-label" for="payment_duitku_va_mandirih2h_environment">{{ entry_environment }}</label>
             <div class="col-sm-10">
-              <select name="payment_duitku_va_mandiri2h_environment" id="payment_duitku_va_mandiri2h_environment" class="form-control">
+              <select name="payment_duitku_va_mandirih2h_environment" id="payment_duitku_va_mandirih2h_environment" class="form-control">
                 {% for environmentType in environment %}
                   {% set option_label = attribute(_context, environmentType) %}
-                  <option value="{{ option_label }}"{% if option_label == payment_duitku_va_mandiri2h_environment %}selected{% endif %}>{{ option_label }}</option>
+                  <option value="{{ option_label }}"{% if option_label == payment_duitku_va_mandirih2h_environment %}selected{% endif %}>{{ option_label }}</option>
                 {% endfor %}
               </select>
             </div>
