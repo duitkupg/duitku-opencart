@@ -94,3 +94,7 @@
 - Change Return Text Callback to Log
 - Change URL Payment MG to V2 Inquiry
 - Update Validate statusCode when request
+
+2.11.9
+----
+- Add channel Tokopedia
